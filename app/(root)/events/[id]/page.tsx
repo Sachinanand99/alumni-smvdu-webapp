@@ -1,0 +1,94 @@
+import { Suspense } from "react";
+import { EVENT_QUERY_BY_ID } from "@/sanity/lib/query";
+import { client } from "@/sanity/lib/client";
+import { notFound } from "next/navigation";
+import { MapPin, BookText } from "lucide-react";
+import markdownIt from "markdown-it";
+import View from "@/components/View";
+import { Skeleton } from "@/components/ui/skeleton";
+import {formatDate} from "@/lib/utils";
+
+
+const md = markdownIt();
+
+export const experimental_ppr = true;
+
+const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const id = (await params).id;
+
+  const [post] = await Promise.all([
+    client.fetch(EVENT_QUERY_BY_ID, { id })
+  ]);
+  if (!post) {
+    return notFound();
+  }
+
+  const parsedContent = md.render(post?.description || "");
+
+  const eventStatus = (start: Date, end: Date) => {
+    const now = new Date();
+
+    return !start || !end
+       ? "Invalid Dates"
+       : now < start
+          ? "Upcoming"
+          : now <= end
+             ? "Ongoing"
+             : "Past Event";
+  };
+
+  return (
+     <>
+       <section className="pink_container pattern !min-h-[230px]">
+         <p className="tag tag-tri">{formatDate(post?.start_date)} - { formatDate(post?.end_date)}</p>
+         <h1 className="heading">{post.title}</h1>
+       </section>
+
+       <main className="max-w-4xl mx-auto my-8 p-4 bg-white border border-gray-200 rounded-lg">
+         {/* Event Card */}
+         <section id="event-card" className="text-center mb-8 pb-4 border-b border-gray-300">
+           <img
+              className="mx-auto mb-4 rounded-lg max-w-full h-auto"
+              src={post.image}
+              alt={post.title}
+           />
+           <p className="text-base">
+             <span className="font-semibold">Date Start:</span> {post.start_date}
+           </p>
+           <p className="text-base">
+             <span className="font-semibold">Date End:</span> {post.end_date} (Indian Standard Time)
+           </p>
+           <p className="text-base">
+             <span className="font-semibold">Status: {eventStatus(new Date(post?.start_date), new Date(post?.end_date))} </span> {post?.status}
+           </p>
+         </section>
+
+         <section id="event-details">
+           <div className="mb-6 p-4 bg-gray-100 rounded-md">
+            <span className="inline-flex items-center gap-1">
+              <MapPin /> <strong>Address:</strong> {post.location}
+            </span>
+           </div>
+           <div className="p-4 bg-gray-100 rounded-md">
+            <span className="inline-flex items-center gap-1">
+              <BookText /> <strong>Description:</strong>
+            </span>
+             {parsedContent ? (
+                <article
+                   className="mt-4 prose max-w-4xl break-all"
+                   dangerouslySetInnerHTML={{ __html: parsedContent }}
+                />
+             ) : (
+                <p className="mt-4">No details provided</p>
+             )}
+           </div>
+         </section>
+         <Suspense fallback={<Skeleton className="view_skeleton" />}>
+           <View id={id} />
+         </Suspense>
+       </main>
+     </>
+  );
+};
+
+export default Page;
