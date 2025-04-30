@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#init data
+init/*.pdf
+init/*.xlsx
+init/*.csv
+
+#temporary files
+temp.*

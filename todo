@@ -61,12 +61,11 @@ About, Events, Alumni Directory[list, map], Services[Alumni Information, Campus 
         -> How to do this section?
 
 7. Campus visit
-        -> How to implement this
+        -> How to implement this?
         -> form details: {
-            Name,
-            Email,
-            Contact
-            Batch,
-            Description,
-
+            Name, string
+            Email, string or email
+            Contact phone no.
+            Batch, string enum
+            Description, description text
         }

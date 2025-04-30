@@ -3,6 +3,8 @@ import { auth, signIn } from "@/auth";
 const Page = async () => {
   const session = await auth();
 
+
+
   return (
      <div className="min-h-screen flex items-center justify-center bg-gray-50">
        {session && session.user ? (
@@ -15,19 +17,6 @@ const Page = async () => {
             <form
                action={async () => {
                  "use server";
-                 await signIn("facebook");
-               }}
-            >
-              <button
-                 type="submit"
-                 className="w-full py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                Connect with Facebook
-              </button>
-            </form>
-            <form
-               action={async () => {
-                 "use server";
                  await signIn("google");
                }}
             >
@@ -35,20 +24,7 @@ const Page = async () => {
                  type="submit"
                  className="w-full py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
               >
-                Connect with Google
-              </button>
-            </form>
-            <form
-               action={async () => {
-                 "use server";
-                 await signIn("linkedin");
-               }}
-            >
-              <button
-                 type="submit"
-                 className="w-full py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                Connect with LinkedIn
+                Connect with your university id's
               </button>
             </form>
           </div>

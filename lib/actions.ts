@@ -45,3 +45,11 @@ export const createPitch = async(state: any, form: FormData, pitch: string)=>{
     return parseServerActionResponse({error: JSON.stringify(error), status: "ERROR"});
   }
 }
+
+export const createCampusVisitRequest = async(state: any, form: FormData)=>{
+  console.log("TODO: create CampusVisitRequest");
+}
+
+export const createAlumniInformationRequest = async(state: any, form: FormData)=>{
+  console.log("TODO: create CampusVisitRequest");
+}
