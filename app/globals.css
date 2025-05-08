@@ -130,7 +130,7 @@
     @apply mt-4 ml-3 font-semibold;
   }
 
-  .pink_container {
+  .orange_container {
     @apply w-full bg-[#FFA500] min-h-[530px] flex justify-center items-center flex-col py-10 px-6;
   }
 
@@ -193,5 +193,53 @@
 
   .tag-tri {
     @apply before:content-[''] before:absolute before:top-2 before:left-2 before:border-t-[10px] before:border-t-black before:border-r-[10px] before:border-r-transparent after:content-[''] after:absolute after:bottom-2 after:right-2 after:border-b-[10px] after:border-b-black after:border-l-[10px] after:border-l-transparent;
+  }
+
+/*  navigation */
+  .active-link {
+    position: relative;
+    color: #FFA500;
+  }
+
+  .active-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    opacity: 0;
+    transform: scaleX(0);
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  }
+
+  .active-link:hover::after,
+  .active-link::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .form{
+    @apply max-w-2xl mx-auto bg-amber-50 my-10 space-y-8 px-6;
+  }
+
+  .form_label{
+    @apply font-bold text-[18px] text-black uppercase;
+  }
+
+  .form_input{
+    @apply border-[3px] border-black px-5 py-7 text-[18px] text-black font-semibold rounded-full mt-3 placeholder:text-[#7D8087];  }
+
+  .form_error{
+    @apply text-red-500 mt-2 ml-5
+  }
+
+  .form_textarea{
+    @apply border-[3px] border-black p-5 text-[18px] text-black font-semibold rounded-[20px] mt-3 placeholder:text-[#7D8087];
+  }
+
+  .form_btn{
+    @apply bg-[#FFA500] border-[4px] border-black rounded-full p-5 min-h-[70px] w-full font-bold text-[18px];
   }
 }

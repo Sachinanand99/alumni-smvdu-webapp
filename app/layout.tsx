@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
 import Navbar from "@/components/Navbar";
+import { SessionProvider } from "next-auth/react";
+
 // import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner"
 
@@ -72,10 +74,12 @@ export default function RootLayout({
         // className={workSans.variable}
         className={"bg-amber-50"}
      >
+     <SessionProvider>
      <Navbar/>
 
      {children}
      <Toaster />
+     </SessionProvider>
      </body>
      </html>
   );

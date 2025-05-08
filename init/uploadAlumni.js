@@ -40,11 +40,11 @@ const processCSV = (filePath) => {
                 department: row["Department"],
                 degree: row["Degree"],
                 professionalSector: row["Professional Sector"] || "",
+                companyOrInstitute: row["Company Or Institute Name"] || "",
                 countryOfResidence: row["Current Country of Residence"] || "",
                 postalAddress: row["Postal Address"] || "",
                 linkedinProfile: row["LinkedIn Profile URL"] || "",
                 twitterProfile: row["Twitter Profile URL"] || "",
-                companyOrInstitute: row["Company Or Institute Name"] || "",
             });
         })
         .on("end", async () => {

@@ -33,19 +33,17 @@ export const AlumniInformationFormSchema = z.object({
   entryNumber: z.string().min(3).max(20),
   department: z.string().min(3).max(50),
   degree: z.array(z.enum(["Undergraduate (B.Tech)", "Masters (M.Tech)"])),
-  professionalSector: z.array(z.enum([
-    "Employee (MNC/ Medium-Large Enterprise)",
-    "Entrepreneur at Scale / Start-Up Founder",
-    "Self-Employed Professional/ Freelancer/ Consultant",
-    "Academician/ Researcher",
-    "Mentor/ Coach",
-    "Employee (Small Enterprises <100 People)",
-    "Government Employee",
-    "Non Profit/ Social Enterprise"
-  ])),
+  professionalSector: z.string().min(3).max(100),
   countryOfResidence: z.string().min(3).max(50),
   postalAddress: z.string().min(10).max(200),
   linkedinProfile: z.string().url().optional(),
   companyOrInstitute: z.string().min(3).max(100),
 });
 
+export const eventSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  eventType: z.string().min(3, "Event type must be provided"),
+  imageUrl: z.string().url("Must be a valid image URL"),
+  eventDetails: z.string().min(20, "Event details must be at least 20 characters"),
+});

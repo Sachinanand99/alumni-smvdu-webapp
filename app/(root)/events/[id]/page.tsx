@@ -1,24 +1,22 @@
 import { Suspense } from "react";
-import { EVENT_QUERY_BY_ID } from "@/sanity/lib/query";
-import { client } from "@/sanity/lib/client";
+import connectMongo from "@/lib/db";
+import EventModel from "@/models/Event";
 import { notFound } from "next/navigation";
 import { MapPin, BookText } from "lucide-react";
 import markdownIt from "markdown-it";
-import View from "@/components/View";
+import View from "@/components/utils/View";
 import { Skeleton } from "@/components/ui/skeleton";
-import {formatDate} from "@/lib/utils";
-
+import { formatDate } from "@/lib/utils";
 
 const md = markdownIt();
 
 export const experimental_ppr = true;
 
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const id = (await params).id;
+const Page = async ({ params }: { params: { id: string } }) => {
+  await connectMongo();
+  const id = params.id;
 
-  const [post] = await Promise.all([
-    client.fetch(EVENT_QUERY_BY_ID, { id })
-  ]);
+  const post = await EventModel.findById(id).lean();
   if (!post) {
     return notFound();
   }
@@ -27,19 +25,18 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   const eventStatus = (start: Date, end: Date) => {
     const now = new Date();
-
     return !start || !end
-       ? "Invalid Dates"
-       : now < start
-          ? "Upcoming"
-          : now <= end
-             ? "Ongoing"
-             : "Past Event";
+        ? "Invalid Dates"
+        : now < start
+            ? "Upcoming"
+            : now <= end
+                ? "Ongoing"
+                : "Past Event";
   };
 
   return (
      <>
-       <section className="pink_container pattern !min-h-[230px]">
+       <section className="orange_container pattern !min-h-[230px]">
          <p className="tag tag-tri">{formatDate(post?.start_date)} - { formatDate(post?.end_date)}</p>
          <h1 className="heading">{post.title}</h1>
        </section>
