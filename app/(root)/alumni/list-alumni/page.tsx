@@ -1,8 +1,8 @@
 import React from "react";
 import AlumniCard, { AlumniTypeCard } from "@/components/cards/AlumniCard";
 import AlumniFilter from "@/components/utils/AlumniFilter";
-import connectMongo from "@/lib/db";
-import AlumniModel from "@/models/Alumni";
+import connectMongo from "@/lib/mongodb";
+import AlumniModel from "@/MongoDb/models/Alumni";
 
 const Page = async ({ searchParams }: { searchParams: { query?: string; dept?: string } }) => {
     await connectMongo();

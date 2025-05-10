@@ -2,7 +2,7 @@
 
 import React, { useState, useActionState } from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea,  } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { GuestHouseFormSchema } from "@/lib/validation";
@@ -11,6 +11,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { createCampusVisitRequest } from "@/lib/actions";
 import { sendEmail } from "@/lib/email";
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon } from "lucide-react"
+import {cn} from "@/lib/utils"
+
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 
 const CampusVisitForm = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -45,6 +54,9 @@ const CampusVisitForm = () => {
 
     const [state, formAction, isPending] = useActionState(handleFormSubmit, { error: '', status: "INITIAL" });
 
+    // Description
+    // when they are coming
+    // Do they need any accomodation
     return (
         <form action={(formAction)} className="form">
             <div>
@@ -73,11 +85,51 @@ const CampusVisitForm = () => {
 
             <div>
                 <label htmlFor="description" className="form_label">Description</label>
-                <Textarea id="description" name="description" className="form_textarea" required placeholder="Enter a brief description..." />
+                <Textarea id="description" name="description" className="form_textarea" required placeholder="Enter the description and the purpose of visit..." />
                 {errors.description && <p className="form_error">{errors.description}</p>}
             </div>
 
-            <Button type="submit" className='form_btn' disabled={isPending}>
+            <div>
+                <label htmlFor="comingDate" className="form_label">Date of Visit</label>
+                <Textarea id="comingDate" name="comingDate" className="form_"></Textarea>
+            {/*    need to add the PopoverTrigger and Calender to input the date fields   */}
+            </div>
+            {/*<div className="flex flex-col"><label></label><Popover>*/}
+            {/*    <PopoverTrigger asChild>*/}
+            {/*        <FormControl>*/}
+            {/*            <Button*/}
+            {/*                variant={"outline"}*/}
+            {/*                className={cn(*/}
+            {/*                    "w-[240px] pl-3 text-left font-normal",*/}
+            {/*                    !field.value && "text-muted-foreground"*/}
+            {/*                )}*/}
+            {/*            >*/}
+            {/*                {field.value ? (*/}
+            {/*                    format(field.value, "PPP")*/}
+            {/*                ) : (*/}
+            {/*                    <span>Pick a date</span>*/}
+            {/*                )}*/}
+            {/*                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />*/}
+            {/*            </Button>*/}
+            {/*        </FormControl>*/}
+            {/*    </PopoverTrigger>*/}
+            {/*    <PopoverContent className="w-auto p-0" align="start">*/}
+            {/*        <Calendar*/}
+            {/*            mode="single"*/}
+            {/*            selected={field.value}*/}
+            {/*            onSelect={field.onChange}*/}
+            {/*            disabled={(date) =>*/}
+            {/*                date > new Date() || date < new Date("1900-01-01")*/}
+            {/*        }*/}
+            {/*            initialFocus*/}
+            {/*        />*/}
+            {/*    </PopoverContent>*/}
+            {/*</Popover><FormDescription>*/}
+            {/*    Your date of birth is used to calculate your age.*/}
+            {/*</FormDescription><FormMessage /></div>*/}
+
+
+    <Button type="submit" className='form_btn' disabled={isPending}>
                 {isPending ? 'Submitting ... ' : 'Submit your Request'}
                 <Send className="size-6 ml-2"/>
             </Button>

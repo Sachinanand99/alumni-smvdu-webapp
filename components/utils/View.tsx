@@ -1,6 +1,6 @@
 import React from "react";
-import connectMongo from "@/lib/db";
-import EventModel from "@/models/Event";
+import connectMongo from "@/lib/mongodb";
+import EventModel from "@/MongoDb/models/Event";
 import Ping from "@/components/utils/Ping";
 
 const View = async ({ id }: { id: string }) => {

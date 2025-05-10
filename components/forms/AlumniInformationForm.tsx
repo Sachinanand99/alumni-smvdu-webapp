@@ -30,6 +30,9 @@ const CampusVisitRequestForm = () => {
                 postalAddress: formData.get("postalAddress") as string,
                 linkedinProfile: formData.get("linkedinProfile") as string,
                 companyOrInstitute: formData.get("companyOrInstitute") as string,
+                income: formData.get("income") as string,
+                gender: formData.get("gender") as string,
+                twitterProfile: formData.get("twitterProfile") as string,
             };
 
             await AlumniInformationFormSchema.parseAsync(formValues);
@@ -97,6 +100,12 @@ const CampusVisitRequestForm = () => {
             </div>
 
             <div>
+                <label htmlFor="gender" className="form_label">Your Gender</label>
+                <Input id="gender" name="gender" className="form_input" required placeholder="(Male / Female)" />
+                {errors.gender && <p className="form_error">{errors.gender}</p>}
+            </div>
+
+            <div>
                 <label htmlFor="department" className="form_label">Your Department at SMVDU</label>
                 <Input id="department" name="department" className="form_input" required placeholder="Enter Your Department..." />
                 {errors.department && <p className="form_error">{errors.department}</p>}
@@ -114,6 +123,11 @@ const CampusVisitRequestForm = () => {
                 {errors.professionalSector && <p className="form_error">{errors.professionalSector}</p>}
             </div>
 
+            <div>
+                <label className="form_label">Your Income (CTC)</label>
+                <Input id="income" name="income" className="form_input" required placeholder="Enter Your Income..." />
+                {errors.income && <p className="form_error">{errors.income}</p>}
+            </div>
 
             <div>
                 <label htmlFor="countryOfResidence" className="form_label">Current Country of Residence (Domicile)</label>
@@ -131,6 +145,12 @@ const CampusVisitRequestForm = () => {
                 <label htmlFor="linkedinProfile" className="form_label">Your Linkedin Profile URL</label>
                 <Input id="linkedinProfile" name="linkedinProfile" className="form_input" type="url" required placeholder="Enter Your LinkedIn Profile..." />
                 {errors.linkedinProfile && <p className="form_error">{errors.linkedinProfile}</p>}
+            </div>
+
+            <div>
+                <label htmlFor="twitterProfile" className="form_label">Your Twitter Profile URL</label>
+                <Input id="twitterProfile" name="twitterProfile" className="form_input" type="url" required placeholder="Enter Your Twitter Profile..." />
+                {errors.twitterProfile && <p className="form_error">{errors.twitterProfile}</p>}
             </div>
 
             <div>

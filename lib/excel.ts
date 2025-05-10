@@ -1,8 +1,8 @@
 import ExcelJS from "exceljs";
 import fs from "fs";
 import path from "path";
-import AlumniModel from "@/models/Alumni";
-import connectMongo from "@/lib/db";
+import AlumniModel from "@/MongoDb/models/Alumni";
+import connectMongo from "@/lib/mongodb";
 
 // TODO
 

@@ -2,8 +2,8 @@ import React from "react";
 
 import EventCard, { EventTypeCard } from "@/components/cards/EventCard";
 import EventFilter from "@/components/utils/EventFilter";
-import connectMongo from "@/lib/db";
-import EventModel from "@/models/Event";
+import connectMongo from "@/lib/mongodb";
+import EventModel from "@/MongoDb/models/Event";
 
 const Page = async ({ searchParams }: { searchParams: { query?: string; cat?: string } }) => {
   await connectMongo();

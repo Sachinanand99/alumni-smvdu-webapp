@@ -40,10 +40,24 @@ export const AlumniInformationFormSchema = z.object({
   companyOrInstitute: z.string().min(3).max(100),
 });
 
+
 export const eventSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  eventType: z.string().min(3, "Event type must be provided"),
-  imageUrl: z.string().url("Must be a valid image URL"),
-  eventDetails: z.string().min(20, "Event details must be at least 20 characters"),
-});
+  start_date: z.string().refine(
+      (val) => !isNaN(Date.parse(val)),
+      { message: "Start date must be a valid date" }
+  ),
+  end_date: z.string().refine(
+      (val) => !isNaN(Date.parse(val)),
+      { message: "End date must be a valid date" }
+  ),
+  location: z.string().min(3, "Location must be provided"),
+  image: z.string().min(1, "Image filename must be provided"),
+}).refine(
+    (data) => new Date(data.end_date) >= new Date(data.start_date),
+    {
+      message: "End date must be after start date",
+      path: ["end_date"],
+    }
+);

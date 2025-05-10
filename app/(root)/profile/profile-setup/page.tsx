@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import AuthGuard from "@/lib/authGuard";
 
 const ProfileSetupPage = () => {
     const { data: session, status } = useSession();
@@ -16,7 +15,7 @@ const ProfileSetupPage = () => {
     useEffect(() => {
         if (status === "loading") return;
         if (!session || !session.user) {
-            router.push("/login");
+            router.push("/auth/login");
         }
     }, [session, status, router]);
 
@@ -42,7 +41,7 @@ const ProfileSetupPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch("/api/local-auth/user/update-profile", {
+        const response = await fetch("/api/auth/update-profile", {
             method: "POST",
             body: JSON.stringify({
                 universityEmail: session?.user?.email,
@@ -59,14 +58,13 @@ const ProfileSetupPage = () => {
 
         if (response.ok) {
             await signOut();
-            router.push("/login");
+            router.push("/auth/login");
         } else {
             setMessage(data.error || "Something went wrong");
         }
     };
 
     return (
-        <AuthGuard>
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="p-8 bg-white rounded-lg shadow-md space-y-4 w-80">
                     <h2 className="text-xl font-bold text-center">Profile Setup</h2>
@@ -78,13 +76,13 @@ const ProfileSetupPage = () => {
                         <form onSubmit={handleSubmit} className="space-y-3">
                             <input
                                 type="email"
-                                value={session?.user?.email}
+                                value={session?.user?.email || ""}
                                 readOnly
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-200"
                             />
                             <input
                                 type="email"
-                                value={personalEmail}
+                                value={personalEmail || ""}
                                 onChange={(e) => setPersonalEmail(e.target.value)}
                                 placeholder="Personal Email"
                                 required
@@ -110,7 +108,6 @@ const ProfileSetupPage = () => {
                     {message && <p className="text-sm text-center text-red-500">{message}</p>}
                 </div>
             </div>
-        </AuthGuard>
     );
 };
 

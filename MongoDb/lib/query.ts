@@ -1,5 +1,5 @@
-import EventModel from "@/models/Event";
-import connectMongo from "@/lib/db";
+import EventModel from "@/MongoDb/models/Event";
+import connectMongo from "@/lib/mongodb";
 
 export const EVENT_QUERY = async ({ search, category }: { search?: string; category?: string }) => {
     await connectMongo();

@@ -8,26 +8,32 @@ const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setMessage("");
 
-        const response = await fetch("/api/local-auth/user/login", {
-            method: "POST",
-            body: JSON.stringify({ email, password }),
-            headers: { "Content-Type": "application/json" },
+        const res = await signIn("credentials", {
+            redirect: false,
+            email,
+            password,
         });
 
+        setLoading(false);
 
-        const data = await response.json();
-
-        if (response.ok) {
+        if (res?.ok) {
             setMessage("Login successful! Redirecting...");
             router.push("/");
         } else {
-            setMessage(data.error || "Invalid credentials. Please try again.");
+            setMessage("Invalid credentials. Please try again.");
         }
+    };
+
+    const handleGoogleLogin = () => {
+        signIn("google");
     };
 
     return (
@@ -53,12 +59,22 @@ const LoginPage = () => {
                     />
                     <button
                         type="submit"
+                        disabled={loading}
                         className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                     >
-                        Login
+                        {loading ? "Logging in..." : "Login"}
                     </button>
                 </form>
+
+                <button
+                    onClick={handleGoogleLogin}
+                    className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                >
+                    Sign in with Google
+                </button>
+
                 {message && <p className="text-sm text-center text-red-500">{message}</p>}
+
                 <div className="flex justify-between text-sm text-gray-500">
                     <a href="/auth/forgot-password" className="hover:underline">Forgot Password?</a>
                     <a href="/auth/register" className="hover:underline">Create an Account</a>

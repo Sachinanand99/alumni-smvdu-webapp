@@ -1,7 +1,6 @@
 import React from 'react'
 import AlumniInformationForm from "@/components/forms/AlumniInformationForm";
 
-// todo
 const Page = () => {
     return (
         <>

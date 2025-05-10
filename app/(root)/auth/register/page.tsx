@@ -8,7 +8,7 @@ const Page = async () => {
             {session && session.user ? (
                 <div className="p-8 bg-white rounded-lg shadow-md">
                     <p className="text-lg font-semibold">User Logged In!</p>
-                    <a href="/public">Add your Profile</a>
+                    <a href="/profile/profile-setup">Add your Profile</a>
                 </div>
             ) : (
                 <div className="p-8 bg-white rounded-lg shadow-md space-y-4 w-80">

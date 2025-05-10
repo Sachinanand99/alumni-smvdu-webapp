@@ -5,39 +5,83 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import MDEditor from '@uiw/react-md-editor';
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Send, Calendar as CalendarIcon } from "lucide-react";
 import { eventSchema } from "@/lib/validation";
 import z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { createEvent } from "@/lib/actions";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 const EventForm = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [eventDetails, setEventDetails] = useState("");
+    const [title, setTitle] = useState("");
+    const [slug, setSlug] = useState("");
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
     const { toast } = useToast();
     const router = useRouter();
 
+    const generateSlug = (title: string, date?: Date) => {
+        const slugTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+        const datePart = date ? format(date, "yyyy-MM-dd") : "unknown-date";
+        return `${slugTitle}-${datePart}`;
+    };
+
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newTitle = e.target.value;
+        setTitle(newTitle);
+        setSlug(generateSlug(newTitle, startDate));
+    };
+
+    const handleStartDateChange = (date: Date | undefined) => {
+        setStartDate(date);
+        setSlug(generateSlug(title, date));
+        // Auto fill end date if it's empty
+        if (!endDate) setEndDate(date);
+    };
+
     const handleFormSubmit = async (prevState: any, formData: FormData) => {
         try {
+            // 1. Upload image file first
+            const imageFile = formData.get('image') as File;
+
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', imageFile);
+
+            const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                body: uploadFormData,
+            });
+
+            const uploadData = await uploadRes.json();
+            const imageUrl = uploadData.url;
+
+            // 2. Prepare form values
             const formValues = {
                 title: formData.get("title") as string,
-                description: formData.get("description") as string,
-                eventType: formData.get("eventType") as string,
-                imageUrl: formData.get("imageUrl") as string,
-                eventDetails,
+                slug: formData.get("slug") as string,
+                start_date: startDate?.toISOString(),
+                end_date: endDate?.toISOString(),
+                location: formData.get("location") as string,
+                image: imageUrl,
+                description: eventDetails,
             };
 
             await eventSchema.parseAsync(formValues);
 
-            const result = await createEvent(prevState, formData, eventDetails);
+            const result = await createEvent(prevState, formValues);
 
             if (result.status === "SUCCESS") {
                 toast({
                     title: "Success",
                     description: "Your event has been created successfully!",
                 });
-                router.push(`/event/${result._id}`);
+                router.push(`/event/${result.slug}`);
             }
 
         } catch (error) {
@@ -69,53 +113,123 @@ const EventForm = () => {
     const [state, formAction, isPending] = useActionState(handleFormSubmit, { error: '', status: "INITIAL" });
 
     return (
-        <form action={(formAction)} className="form">
+        <form action={formAction} className="form">
+            {/* Title */}
             <div>
                 <label htmlFor="title" className="form_label">Event Title</label>
-                <Input id="title" name="title" className="form_input" required placeholder="Enter event title" />
+                <Input
+                    id="title"
+                    name="title"
+                    className="form_input"
+                    required
+                    placeholder="Enter event title"
+                    value={title}
+                    onChange={handleTitleChange}
+                />
                 {errors.title && <p className="form_error">{errors.title}</p>}
             </div>
 
+            {/* Slug */}
             <div>
-                <label htmlFor="description" className="form_label">Event Description</label>
-                <Textarea id="description" name="description" className="form_textarea" required placeholder="Describe the event" />
-                {errors.description && <p className="form_error">{errors.description}</p>}
+                <label htmlFor="slug" className="form_label">Event Slug</label>
+                <Input
+                    id="slug"
+                    name="slug"
+                    className="form_input"
+                    required
+                    value={slug}
+                    readOnly
+                />
+                {errors.slug && <p className="form_error">{errors.slug}</p>}
             </div>
 
-            <div>
-                <label htmlFor="eventType" className="form_label">Event Type</label>
-                <Input id="eventType" name="eventType" className="form_input" required placeholder="E.g., Workshop, Seminar, Meetup" />
-                {errors.eventType && <p className="form_error">{errors.eventType}</p>}
+            {/* Start Date */}
+            <div className="flex flex-col gap-2">
+                <label className="form_label">Start Date</label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant={"outline"} className={`w-full justify-start text-left font-normal ${!startDate ? "text-muted-foreground" : ""}`}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {startDate ? format(startDate, "PPP") : "Pick a start date"}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <Calendar
+                            mode="single"
+                            selected={startDate}
+                            onSelect={handleStartDateChange}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
+                {errors.start_date && <p className="form_error">{errors.start_date}</p>}
             </div>
 
-            <div>
-                <label htmlFor="imageUrl" className="form_label">Event Image URL</label>
-                <Input id="imageUrl" name="imageUrl" className="form_input" required placeholder="Enter event image URL" />
-                {errors.imageUrl && <p className="form_error">{errors.imageUrl}</p>}
+            {/* End Date */}
+            <div className="flex flex-col gap-2 mt-4">
+                <label className="form_label">End Date</label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant={"outline"} className={`w-full justify-start text-left font-normal ${!endDate ? "text-muted-foreground" : ""}`}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {endDate ? format(endDate, "PPP") : "Pick an end date"}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <Calendar
+                            mode="single"
+                            selected={endDate}
+                            onSelect={setEndDate}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
+                {errors.end_date && <p className="form_error">{errors.end_date}</p>}
             </div>
 
+            {/* Location */}
+            <div>
+                <label htmlFor="location" className="form_label">Event Location</label>
+                <Input id="location" name="location" className="form_input" required placeholder="Enter event location" />
+                {errors.location && <p className="form_error">{errors.location}</p>}
+            </div>
+
+            {/* Image */}
+            <div>
+                <label htmlFor="image" className="form_label">Event Image</label>
+                <Input
+                    id="image"
+                    name="image"
+                    className="form_input"
+                    type="file"
+                    accept="image/*"
+                    required
+                />
+                {errors.image && <p className="form_error">{errors.image}</p>}
+            </div>
+
+
+
+            {/* Description */}
             <div data-color-mode="light">
-                <label htmlFor="eventDetails" className="form_label">Event Details</label>
+                <label htmlFor="description" className="form_label">Event Description</label>
                 <MDEditor
                     value={eventDetails}
                     onChange={(value) => setEventDetails(value as string)}
-                    id="eventDetails"
+                    id="description"
                     preview="edit"
                     height={300}
                     style={{ borderRadius: "20px", overflow: "hidden" }}
-                    textareaProps={{
-                        placeholder: "Provide additional details about the event",
-                    }}
-                    previewOptions={{
-                        disallowedElements: ["style"]
-                    }}
+                    textareaProps={{ placeholder: "Provide detailed description about the event" }}
+                    previewOptions={{ disallowedElements: ["style"] }}
                 />
-                {errors.eventDetails && <p className="form_error">{errors.eventDetails}</p>}
+                {errors.description && <p className="form_error">{errors.description}</p>}
             </div>
 
+            {/* Submit Button */}
             <Button type="submit" className='form_btn' disabled={isPending}>
                 {isPending ? 'Submitting ... ' : 'Submit Your Event'}
-                <Send className="size-6 ml-2"/>
+                <Send className="size-6 ml-2" />
             </Button>
         </form>
     );

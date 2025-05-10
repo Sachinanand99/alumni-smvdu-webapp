@@ -3,8 +3,8 @@ import Footer from "@/components/Footer";
 import HomeEventCard from "@/components/cards/HomeEventCard";
 import ContactMap from "@/components/utils/ContactMap";
 import ContactCard from "@/components/cards/ContactCard";
-import EventModel from "@/models/Event";
-import connectMongo from "@/lib/db";
+import EventModel from "@/MongoDb/models/Event";
+import connectMongo from "@/lib/mongodb";
 
 export default async function Home({ searchParams }: { searchParams: { query?: string; cat?: string } }) {
     await connectMongo();
