@@ -7,6 +7,7 @@ import markdownIt from "markdown-it";
 import View from "@/components/utils/View";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/utils";
+import {format} from "date-fns";
 
 const md = markdownIt();
 
@@ -16,7 +17,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
   await connectMongo();
   const id = params.id;
 
-  const post = await EventModel.findById(id).lean();
+  const post = JSON.parse(JSON.stringify(await EventModel.findById(id).sort({ start_date: -1 })));
   if (!post) {
     return notFound();
   }
@@ -50,10 +51,10 @@ const Page = async ({ params }: { params: { id: string } }) => {
               alt={post.title}
            />
            <p className="text-base">
-             <span className="font-semibold">Date Start:</span> {post.start_date}
+             <span className="font-semibold">Date Start:</span> {format(new Date(post.start_date), "PPP")}
            </p>
            <p className="text-base">
-             <span className="font-semibold">Date End:</span> {post.end_date} (Indian Standard Time)
+             <span className="font-semibold">Date End:</span> {format(new Date(post.end_date), "PPP")} (Indian Standard Time)
            </p>
            <p className="text-base">
              <span className="font-semibold">Status: {eventStatus(new Date(post?.start_date), new Date(post?.end_date))} </span> {post?.status}

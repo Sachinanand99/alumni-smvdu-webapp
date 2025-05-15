@@ -3,6 +3,9 @@ import {Phone, Mail, Facebook} from 'lucide-react';
 import Link from "next/link";
 
 const ContactCard = () => {
+  const ContactCardPhone = process.env.ContactCardPhone || "N/A";
+  const ContactCardMail = process.env.ContactCardMail || "N/A";
+
   return (
      <div className="home_contact-card ">
        <div>
@@ -13,11 +16,10 @@ const ContactCard = () => {
          </article>
          <div className="flex flex-col justify-start py-3 gap-y-1">
            <div className="flex">
-             {/*todo: update phone and email*/}
-             <Phone/>&nbsp; : +91-9419068730; +91-9419068924
+             <Phone/>&nbsp; : {ContactCardPhone}
            </div>
            <div className="flex">
-             <Mail/> &nbsp;: info@smvdu.ac.in
+             <Mail/> &nbsp;: {ContactCardMail}
            </div>
          </div>
          <div className="flex gap-x-2 py-3">

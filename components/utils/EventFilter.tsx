@@ -34,14 +34,10 @@ const EventFilter = ({ query, events }: { query?: string, events?: EventTypeCard
     router.push(`/events?query=${query || ""}&cat=ongoing`);
   }
 
-  function getEventCounts(events: EventTypeCard) {
-    const counts = {
-      upcoming: 0,
-      ongoing: 0,
-      past: 0,
-    };
+  function getEventCounts(events: EventTypeCard[]) {
+    const counts = { upcoming: 0, ongoing: 0, past: 0 };
 
-    events.forEach(({ start_date, end_date }:{start_date: Date, end_date: Date}) => {
+    events.forEach(({ start_date, end_date }) => {
       const status = eventStatus(new Date(start_date), new Date(end_date));
       if (status === 2) counts.upcoming++;
       else if (status === 1) counts.ongoing++;

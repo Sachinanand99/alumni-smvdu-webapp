@@ -9,6 +9,7 @@ import CampusVisitModel from "@/MongoDb/models/CampusVisit";
 import { sendEmail } from "@/lib/email";
 import EventModel from "@/MongoDb/models/Event";
 import { eventSchema } from "./validation";
+import {revalidatePath} from "next/cache";
 
 const campusVisitSchema = z.object({
   name: z.string().min(2),

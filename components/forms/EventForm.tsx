@@ -2,7 +2,6 @@
 
 import React, { useState, useActionState } from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import MDEditor from '@uiw/react-md-editor';
 import { Button } from "@/components/ui/button";
 import { Send, Calendar as CalendarIcon } from "lucide-react";
@@ -22,6 +21,8 @@ const EventForm = () => {
     const [slug, setSlug] = useState("");
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const { toast } = useToast();
     const router = useRouter();
@@ -45,21 +46,35 @@ const EventForm = () => {
         if (!endDate) setEndDate(date);
     };
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file)); // Show preview
+        }
+    };
+
     const handleFormSubmit = async (prevState: any, formData: FormData) => {
         try {
-            // 1. Upload image file first
-            const imageFile = formData.get('image') as File;
+            if (!imageFile) {
+                new Error("No image selected.");
+            }
 
+            // Upload the image file first
             const uploadFormData = new FormData();
-            uploadFormData.append('file', imageFile);
+            uploadFormData.append("file", imageFile);
 
-            const uploadRes = await fetch('/api/upload', {
-                method: 'POST',
+            const uploadRes = await fetch("/api/upload", {
+                method: "POST",
                 body: uploadFormData,
             });
 
             const uploadData = await uploadRes.json();
-            const imageUrl = uploadData.url;
+            if (!uploadData.success) {
+                new Error("Image upload failed.");
+            }
+
+            const imageUrl = `/uploads/${uploadData.name}`;
 
             // 2. Prepare form values
             const formValues = {
@@ -81,7 +96,7 @@ const EventForm = () => {
                     title: "Success",
                     description: "Your event has been created successfully!",
                 });
-                router.push(`/event/${result.slug}`);
+                router.push(`/events/${result._id}`);
             }
 
         } catch (error) {
@@ -114,7 +129,6 @@ const EventForm = () => {
 
     return (
         <form action={formAction} className="form">
-            {/* Title */}
             <div>
                 <label htmlFor="title" className="form_label">Event Title</label>
                 <Input
@@ -129,21 +143,6 @@ const EventForm = () => {
                 {errors.title && <p className="form_error">{errors.title}</p>}
             </div>
 
-            {/* Slug */}
-            <div>
-                <label htmlFor="slug" className="form_label">Event Slug</label>
-                <Input
-                    id="slug"
-                    name="slug"
-                    className="form_input"
-                    required
-                    value={slug}
-                    readOnly
-                />
-                {errors.slug && <p className="form_error">{errors.slug}</p>}
-            </div>
-
-            {/* Start Date */}
             <div className="flex flex-col gap-2">
                 <label className="form_label">Start Date</label>
                 <Popover>
@@ -165,7 +164,6 @@ const EventForm = () => {
                 {errors.start_date && <p className="form_error">{errors.start_date}</p>}
             </div>
 
-            {/* End Date */}
             <div className="flex flex-col gap-2 mt-4">
                 <label className="form_label">End Date</label>
                 <Popover>
@@ -187,14 +185,25 @@ const EventForm = () => {
                 {errors.end_date && <p className="form_error">{errors.end_date}</p>}
             </div>
 
-            {/* Location */}
+            <div>
+                <label htmlFor="slug" className="form_label">Event Slug</label>
+                <Input
+                    id="slug"
+                    name="slug"
+                    className="form_input"
+                    required
+                    value={slug}
+                    readOnly
+                />
+                {errors.slug && <p className="form_error">{errors.slug}</p>}
+            </div>
+
             <div>
                 <label htmlFor="location" className="form_label">Event Location</label>
                 <Input id="location" name="location" className="form_input" required placeholder="Enter event location" />
                 {errors.location && <p className="form_error">{errors.location}</p>}
             </div>
 
-            {/* Image */}
             <div>
                 <label htmlFor="image" className="form_label">Event Image</label>
                 <Input
@@ -204,13 +213,12 @@ const EventForm = () => {
                     type="file"
                     accept="image/*"
                     required
+                    onChange={handleImageChange}
                 />
                 {errors.image && <p className="form_error">{errors.image}</p>}
             </div>
 
 
-
-            {/* Description */}
             <div data-color-mode="light">
                 <label htmlFor="description" className="form_label">Event Description</label>
                 <MDEditor
@@ -226,7 +234,6 @@ const EventForm = () => {
                 {errors.description && <p className="form_error">{errors.description}</p>}
             </div>
 
-            {/* Submit Button */}
             <Button type="submit" className='form_btn' disabled={isPending}>
                 {isPending ? 'Submitting ... ' : 'Submit Your Event'}
                 <Send className="size-6 ml-2" />

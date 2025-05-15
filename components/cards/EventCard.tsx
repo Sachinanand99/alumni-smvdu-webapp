@@ -2,8 +2,20 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Clock, MapPin } from "lucide-react";
 import ShareModal from "../utils/ShareModal";
+import { format } from "date-fns";
 
-export type EventTypeCard = Event;
+export type EventTypeCard = {
+  _id: string;
+  title: string;
+  slug: string;
+  start_date: string;
+  end_date: string;
+  location: string;
+  image: string;
+  attendees: number;
+  views: number;
+  description: string;
+};
 
 const EventCard = ({ event }: { event: EventTypeCard }) => {
   const shareUrl = process.env.SITEURL + "/events/" + event._id;
@@ -45,11 +57,11 @@ const EventCard = ({ event }: { event: EventTypeCard }) => {
            <div className="mt-6 space-y-1 text-sm text-gray-700">
              <div className="flex items-center space-x-2">
                <Clock className="w-4 h-4" />
-               <span>Starts: {event.start_date}</span>
+               <span>Starts: {format(new Date(event.start_date), "PPP")}</span>
              </div>
              <div className="flex items-center space-x-2">
                <Clock className="w-4 h-4" />
-               <span>Ends: {event.end_date}</span>
+               <span>Ends: {format(new Date(event.end_date), "PPP")}</span>
              </div>
              <div className="flex items-center space-x-2">
                <MapPin className="w-4 h-4" />

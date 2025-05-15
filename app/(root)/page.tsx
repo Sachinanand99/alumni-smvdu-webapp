@@ -34,12 +34,21 @@ export default async function Home({ searchParams }: { searchParams: { query?: s
                     {events?.length > 0 ? (
                         events.slice(0, 6).map((post) => <HomeEventCard key={post._id} event={post} />)
                     ) : (
-                        <p className="no-results">No Events found</p>
+                        <p className="no-results">No Events Found...</p>
                     )}
                 </ul>
             </section>
 
-            <section>alumni cards</section>
+            <section className="px-6 py-10 max-w-7xl mx-auto">
+                <p className="font-semibold text-[30px] text-black">Alumni</p>
+                <ul className="mt-7 grid md:grid-cols-3 sm:grid-cols-2 gap-5">
+                    {events?.length > 0 ? (
+                        events.slice(0, 6).map((post) => <HomeEventCard key={post._id} event={post} />)
+                    ) : (
+                        <p className="no-results">No Alumni Found...</p>
+                    )}
+                </ul>
+            </section>
 
             <section className="px-6 py-10 max-w-7xl mx-auto" id="contact">
                 <p className="font-semibold text-[30px] text-black">Contact Us</p>

@@ -10,7 +10,7 @@ const Page = async ({ searchParams }: { searchParams: { query?: string; dept?: s
     const query = searchParams.query || "";
     const department = searchParams.dept || "all";
 
-    const filter: any = {};
+    const filter: any = {   };
 
     if (query) {
         filter.name = { $regex: query, $options: "i" };

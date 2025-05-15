@@ -26,8 +26,8 @@ const Page = async ({ searchParams }: { searchParams: { query?: string; cat?: st
     if (category === "past") filter.end_date = { $lt: now };
   }
 
-  const events = await EventModel.find(filter).sort({ start_date: -1 });
-  const allEvents = await EventModel.find({}).sort({ start_date: -1 });
+  const events = JSON.parse(JSON.stringify(await EventModel.find(filter).sort({ start_date: -1 })));
+  const allEvents = JSON.parse(JSON.stringify(await EventModel.find({}).sort({ start_date: -1 })));
 
   return (
       <>

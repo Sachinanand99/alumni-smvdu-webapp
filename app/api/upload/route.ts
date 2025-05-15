@@ -1,23 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { upload } from '@/lib/multer';
-import nextConnect from 'next-connect';
+// https://javascript.plainenglish.io/file-upload-with-next-js-14-app-router-6cb0e594e778
 
-const apiRoute = nextConnect({
-    onError(error, req, res) {
-        res.status(501).json({ error: `Something went wrong! ${error.message}` });
-    },
-    onNoMatch(req, res) {
-        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-    },
-});
+import { NextRequest, NextResponse } from "next/server";
+import path from "path";
+import fs from "fs";
 
-apiRoute.use(upload.single('file')); // name="file" in formData
+const UPLOAD_DIR = path.resolve(process.env.ROOT_PATH ?? "", "public/uploads");
 
-apiRoute.post((req: any, res: any) => {
-    const fileUrl = `/uploads/${req.file.filename}`;
-    res.status(200).json({ url: fileUrl });
-});
+export const POST = async (req: NextRequest) => {
+    const formData = await req.formData();
+    const body = Object.fromEntries(formData);
+    const file = (body.file as Blob) || null;
 
-export const POST = (req: NextRequest, res: NextResponse) => {
-    return apiRoute(req, res);
+    if (file) {
+        const buffer = Buffer.from(await file.arrayBuffer());
+        if (!fs.existsSync(UPLOAD_DIR)) {
+            fs.mkdirSync(UPLOAD_DIR);
+        }
+
+        fs.writeFileSync(
+            path.resolve(UPLOAD_DIR, (body.file as File).name),
+            buffer
+        );
+    } else {
+        return NextResponse.json({
+            success: false,
+        });
+    }
+
+    return NextResponse.json({
+        success: true,
+        name: (body.file as File).name,
+    });
 };

@@ -47,3 +47,6 @@ init/*.csv
 
 #temporary files
 temp.*
+
+#public directory
+/public/uploads/*
