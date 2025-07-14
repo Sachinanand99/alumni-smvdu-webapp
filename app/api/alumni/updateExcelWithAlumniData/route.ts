@@ -31,7 +31,6 @@ export async function POST(req: Request) {
 
         const workbook = xlsx.read(fs.readFileSync(filePath), { type: "buffer" });
 
-        // Ensure the sheet for the admission year exists
         if (!workbook.SheetNames.includes(admissionYear)) {
             workbook.SheetNames.push(admissionYear);
             workbook.Sheets[admissionYear] = xlsx.utils.json_to_sheet([]);
@@ -60,7 +59,6 @@ export async function POST(req: Request) {
         let updated = false;
         let updatedIndex = -1;
 
-        // Check for existing entry by entryNumber or email
         for (let i = 0; i < sheetData.length; i++) {
             const row = sheetData[i];
             if (
@@ -74,14 +72,12 @@ export async function POST(req: Request) {
             }
         }
 
-        // If no match found, add as new
         if (!updated) {
             const Sno = sheetData.length + 1;
             sheetData.push({ Sno, ...newEntry });
             updatedIndex = Sno - 1;
         }
 
-        // Write back to Excel
         workbook.Sheets[admissionYear] = xlsx.utils.json_to_sheet(sheetData);
         try {
             const buffer = xlsx.write(workbook, { bookType: "xlsx", type: "buffer" });
