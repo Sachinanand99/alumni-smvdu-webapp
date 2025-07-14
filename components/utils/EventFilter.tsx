@@ -8,9 +8,9 @@ import { Search } from "lucide-react";
 import SearchFormReset from "./SearchFormReset";
 import Form from "next/form";
 import {eventStatus} from "@/lib/utils";
-import {EventTypeCard} from "@/components/cards/EventCard";
+import {EventDocument} from "@/MongoDb/models/Event";
 
-const EventFilter = ({ query, events }: { query?: string, events?: EventTypeCard }) => {
+const EventFilter = ({ query, events }: { query?: string, events?: EventDocument }) => {
   const [filter, setFilter] = useState("all");
   const router = useRouter();
 
@@ -34,7 +34,7 @@ const EventFilter = ({ query, events }: { query?: string, events?: EventTypeCard
     router.push(`/events?query=${query || ""}&cat=ongoing`);
   }
 
-  function getEventCounts(events: EventTypeCard[]) {
+  function getEventCounts(events: EventDocument[]) {
     const counts = { upcoming: 0, ongoing: 0, past: 0 };
 
     events.forEach(({ start_date, end_date }) => {

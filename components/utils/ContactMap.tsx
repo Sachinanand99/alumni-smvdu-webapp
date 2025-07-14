@@ -10,7 +10,7 @@ export default function ContactMap({
                                latitude,
                                longitude,
                            }: {
-    apiKey: string;
+    apiKey: string | undefined;
     latitude: number;
     longitude: number;
 }) {

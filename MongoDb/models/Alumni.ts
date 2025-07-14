@@ -13,6 +13,10 @@ export interface AlumniDocument extends Document {
     linkedinProfile?: string;
     companyOrInstitute: string;
     createdAt: Date;
+    income: string;
+    Sno: string;
+    profilePicture:  string;
+    graduationYear: string;
 }
 
 const AlumniSchema = new Schema<AlumniDocument>({
@@ -30,6 +34,9 @@ const AlumniSchema = new Schema<AlumniDocument>({
     createdAt: { type: Date, default: Date.now },
 });
 
-const Alumni = mongoose.models.Alumni || mongoose.model<AlumniDocument>("Alumni", AlumniSchema);
 
-export default Alumni;
+// not using mongodb, using excel instead. So the below have no effect.
+const AlumniModel = mongoose.models.Alumni || mongoose.model<AlumniDocument>("Alumni", AlumniSchema);
+
+
+export default AlumniModel;

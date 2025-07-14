@@ -8,14 +8,28 @@ import View from "@/components/utils/View";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/utils";
 import {format} from "date-fns";
+import {Button} from "@/components/ui/button"
+import Link from "next/link";
+import DeleteEventButton from "@/components/utils/DeleteEventButton"
+import { auth } from "@/auth";
+import { isEventAdmin } from "@/lib/utils";
+import { getGalleryByEventId } from "@/lib/actions";
+import { GallerySection } from "@/components/utils/GallarySection";
+import GalleryUploadForm from "@/components/forms/GalleryUploadForm";
+
 
 const md = markdownIt();
 
 export const experimental_ppr = true;
 
 const Page = async ({ params }: { params: { id: string } }) => {
+  const session = await auth();
+
+  const canEdit = isEventAdmin(session?.user?.email);
+
+
   await connectMongo();
-  const id = params.id;
+  const {id} = await params;
 
   const post = JSON.parse(JSON.stringify(await EventModel.findById(id).sort({ start_date: -1 })));
   if (!post) {
@@ -23,6 +37,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
   }
 
   const parsedContent = md.render(post?.description || "");
+  const galleryImages = await getGalleryByEventId(id);
 
   const eventStatus = (start: Date, end: Date) => {
     const now = new Date();
@@ -81,6 +96,18 @@ const Page = async ({ params }: { params: { id: string } }) => {
              )}
            </div>
          </section>
+         {canEdit && (
+             <section id="event-update-delete">
+               <div className="mb-2 p-4 flex justify-around">
+                 <DeleteEventButton id={id} />
+                 <Link href={`/events/${id}/edit`}>
+                   <Button className="bg-green-700 hover:bg-green-600">Update</Button>
+                 </Link>
+               </div>
+             </section>
+         )}
+         <GallerySection images={galleryImages} isAdmin={canEdit} />
+         {canEdit && <GalleryUploadForm eventId={id} />}
          <Suspense fallback={<Skeleton className="view_skeleton" />}>
            <View id={id} />
          </Suspense>

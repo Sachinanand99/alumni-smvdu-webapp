@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { toast } from "@/components/ui/sonner";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -24,17 +25,16 @@ const LoginPage = () => {
 
         setLoading(false);
 
-        if (res?.ok) {
-            setMessage("Login successful! Redirecting...");
+        console.log(res);
+
+        if (res?.ok && !res?.error) {
+            toast.success("✅ Login successful!");
             router.push("/");
         } else {
-            setMessage("Invalid credentials. Please try again.");
+            toast.error("❌ Invalid credentials. Please try again.");
         }
     };
 
-    const handleGoogleLogin = () => {
-        signIn("google");
-    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -66,12 +66,6 @@ const LoginPage = () => {
                     </button>
                 </form>
 
-                <button
-                    onClick={handleGoogleLogin}
-                    className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-                >
-                    Sign in with Google
-                </button>
 
                 {message && <p className="text-sm text-center text-red-500">{message}</p>}
 

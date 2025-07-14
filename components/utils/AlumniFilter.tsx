@@ -7,23 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import SearchFormReset from "./SearchFormReset";
 import Form from "next/form";
-import { AlumniTypeCard } from "@/components/cards/AlumniCard";
+import {AlumniDocument} from "@/MongoDb/models/Alumni";
 
-const AlumniFilter = ({ query, alumni }: { query?: string, alumni?: AlumniTypeCard[] }) => {
+const AlumniFilter = ({ query, alumni }: { query?: string, alumni?: AlumniDocument[] }) => {
     const [filter, setFilter] = useState("all");
     const router = useRouter();
 
     function selectAll() {
         setFilter("all");
-        router.push(`/list-alumni?query=${query || ""}&dept=all`);
+        router.push(`/alumni/list-alumni?query=${query || ""}&dept=all`);
     }
 
     function selectDepartment(dept: string) {
         setFilter(dept);
-        router.push(`/list-alumni?query=${query || ""}&dept=${dept}`);
+        router.push(`/alumni/list-alumni?query=${query || ""}&dept=${dept}`);
     }
 
-    function getAlumniCounts(alumni: AlumniTypeCard[]) {
+    function getAlumniCounts(alumni: AlumniDocument[]) {
         const departmentCounts: Record<string, number> = {};
 
         alumni.forEach(({ department }) => {
@@ -36,10 +36,10 @@ const AlumniFilter = ({ query, alumni }: { query?: string, alumni?: AlumniTypeCa
     }
 
     const departmentCounts = getAlumniCounts(alumni);
-    const totalAlumni = alumni.length;
+    const totalAlumni = alumni?.length;
 
     return (
-        <div className="basis-[25%] mt-4 ml-4">
+        <div className="basis-[25%] mt-4 ml-4 min-w-[15%]">
             <Form action="/alumni" scroll={false} className="flex flex-1 max-w-sm space-x-2 search-form">
                 <Input
                     name="query"

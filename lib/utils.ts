@@ -24,3 +24,9 @@ export function eventStatus(start: Date, end: Date){
            ? 1
            : 0;
 }
+
+export const isEventAdmin = (email: string | undefined | null): boolean => {
+  if (!email) return false;
+  const admins = process.env.EVENTS_ADMIN?.split(",").map(e => e.trim().toLowerCase()) || [];
+  return admins.includes(email.toLowerCase());
+};

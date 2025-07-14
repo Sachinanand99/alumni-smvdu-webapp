@@ -3,8 +3,8 @@ import {Phone, Mail, Facebook} from 'lucide-react';
 import Link from "next/link";
 
 const ContactCard = () => {
-  const ContactCardPhone = process.env.ContactCardPhone || "N/A";
-  const ContactCardMail = process.env.ContactCardMail || "N/A";
+  const ContactCardPhone = process.env.REACT_APP_CONTACT_PHONE || "N/A";
+  const ContactCardMail = process.env.REACT_APP_CONTACT_EMAIL || "N/A";
 
   return (
      <div className="home_contact-card ">

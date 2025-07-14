@@ -10,17 +10,26 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export const sendEmail = async (subject: string, message: string) => {
+export const sendEmail = async (subject: string, message: string, recipientEmail?: string) => {
     try {
+        const toEmail = recipientEmail?.trim() || process.env.RECEIVE_CAMPUS_VISIT_MAIL?.trim();
+
+        if (!toEmail) {
+            console.error("Error: No recipient email defined.");
+            return { success: false, error: "No recipient email provided" };
+        }
+
         await transporter.sendMail({
             from: `"Campus Visit Request" <${process.env.EMAIL_USER}>`,
-            to: process.env.GUEST_HOUSE_REGISTRATION_EMAIL,
+            to: toEmail,
             subject,
             text: message,
+            html: `<html lang="en-US"><body style="font-family: Arial, sans-serif; padding: 20px;"><p>${message.replace(/\n/g, "<br>")}</p></body></html>`, // HTML formatting
         });
+
         return { success: true };
     } catch (error) {
         console.error("Email Error:", error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 };

@@ -3,21 +3,10 @@ import Link from "next/link";
 import { Clock, MapPin } from "lucide-react";
 import ShareModal from "../utils/ShareModal";
 import { format } from "date-fns";
+import {EventDocument} from "@/MongoDb/models/Event";
 
-export type EventTypeCard = {
-  _id: string;
-  title: string;
-  slug: string;
-  start_date: string;
-  end_date: string;
-  location: string;
-  image: string;
-  attendees: number;
-  views: number;
-  description: string;
-};
 
-const EventCard = ({ event }: { event: EventTypeCard }) => {
+const EventCard = ({ event }: { event: EventDocument }) => {
   const shareUrl = process.env.SITEURL + "/events/" + event._id;
 
   const now = new Date();

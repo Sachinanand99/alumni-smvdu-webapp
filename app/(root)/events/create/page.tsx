@@ -2,7 +2,6 @@ import EventForm from "@/components/forms/EventForm";
 
 const Page = async () => {
 
-  //   admin only
   return (
      <>
        <section className="orange_container pattern !min-h-[230px]">

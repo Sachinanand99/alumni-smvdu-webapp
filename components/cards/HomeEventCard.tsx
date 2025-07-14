@@ -2,21 +2,22 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {Eye} from "lucide-react";
-import {formatDate} from "@/lib/utils";
 import markdownIt from "markdown-it";
+import {EventDocument} from "@/MongoDb/models/Event";
+import Image from "next/image";
+import {format} from "date-fns";
 
-export type EventTypeCard = Event;
 
 const md = markdownIt();
 
-const EventCard = ({ event }: { event: EventTypeCard }) => {
+const EventCard = ({ event }: { event: EventDocument }) => {
 
   const parsedContent = md.render(event?.description || "");
 
   return (
      <li className="home_event-card shadow-orange-200 group">
        <div className="flex justify-between items-center">
-         <p className="home_event-card_date">{formatDate(event.start_date)}</p>
+         <p className="home_event-card_date">{format(new Date(event.start_date), "PPP")}</p>
          <div className="flex gap-1.5">
           <Eye />
            <span>
@@ -39,7 +40,7 @@ const EventCard = ({ event }: { event: EventTypeCard }) => {
               <p className="mt-4">No details provided</p>
            )}
          </span>
-         <img src={event.image} alt="placeholder" className="home_evnet-card_img" />
+         <Image width={100} height={100} src={event.image} alt="placeholder" className="home_evnet-card_img" />
        <div className="flex-between gap-3 mt-5">
          <Button className="home_event-card_btn" asChild>
            <Link href={`/events/${event._id}`}>

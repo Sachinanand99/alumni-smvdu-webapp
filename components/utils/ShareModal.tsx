@@ -1,13 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import { Share, X } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 
 const ShareModal = ({ eventUrl }: { eventUrl: string }) => {
     const [isModalOpen, setModalOpen] = useState(false);
     const openModal = () => setModalOpen(true);
     const closeModal = () => setModalOpen(false);
-    const { toast } = useToast();
 
     return (
         <>
@@ -28,11 +27,9 @@ const ShareModal = ({ eventUrl }: { eventUrl: string }) => {
                                 <button
                                     onClick={() => {
                                         navigator.clipboard.writeText(eventUrl);
-                                        toast({
-                                            title: "Copied!",
-                                            description: "Event link copied to clipboard.",
-                                            status: "success",
-                                        });
+                                        toast(
+                                             "✅ Event link copied to clipboard.",
+                                        );
                                     }}
                                     className="text-blue-500 cursor-pointer"
                                 >

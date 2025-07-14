@@ -5,26 +5,34 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send, CalendarIcon } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { UserDocument } from "@/MongoDb/models/User";
+import { toast } from "@/components/ui/sonner"
 
-const CampusVisitForm = () => {
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const { toast } = useToast();
+const CampusVisitForm = ({ user }: { user: UserDocument }) => {
     const router = useRouter();
 
+
+    const batchRegex = /^\d+(?=bcs)/;
+    const batchValue = user?.universityEmail?.match(batchRegex)?.[0] + "-BCS" || "";
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [visitDate, setVisitDate] = useState<Date | undefined>(undefined);
 
     const handleFormSubmit = async (prevState: any, formData: FormData) => {
         try {
-            // Append selected date to formData
-            if (visitDate) {
-                formData.set('comingDate', visitDate.toISOString());
+            if (!visitDate) {
+                toast(
+                     "⛔ Please select a date before submitting.",
+                );
+                return;
             }
+
+            formData.set('comingDate', visitDate.toISOString());
 
             const response = await fetch("/api/campus-visit", {
                 method: "POST",
@@ -34,18 +42,15 @@ const CampusVisitForm = () => {
 
             const result = await response.json();
             if (result.status === "SUCCESS") {
-                toast({
-                    title: "Success",
-                    description: "Your request has been created successfully",
-                });
+                toast(
+                    "✅ Your request has been created successfully"
+                );
                 router.push(`/`);
             }
         } catch (error) {
-            toast({
-                title: "Error",
-                description: "An Unexpected Error has occurred",
-                variant: "destructive",
-            });
+            toast(
+                 "❌ An Unexpected Error has occurred",
+            );
         }
     };
 
@@ -55,13 +60,13 @@ const CampusVisitForm = () => {
         <form action={formAction} className="form">
             <div>
                 <label htmlFor="name" className="form_label">Name</label>
-                <Input id="name" name="name" className="form_input" required placeholder="Enter Your Name..." />
+                <Input id="name" name="name" defaultValue={user?.name || ""} className="form_input" required readOnly />
                 {errors.name && <p className="form_error">{errors.name}</p>}
             </div>
 
             <div>
                 <label htmlFor="email" className="form_label">Email</label>
-                <Input id="email" name="email" className="form_input" type="email" required placeholder="Enter Your Email..." />
+                <Input id="email" name="email" className="form_input" defaultValue={user?.personalEmail || ""} type="email" required />
                 {errors.email && <p className="form_error">{errors.email}</p>}
             </div>
 
@@ -73,7 +78,7 @@ const CampusVisitForm = () => {
 
             <div>
                 <label htmlFor="batch" className="form_label">Batch</label>
-                <Input id="batch" name="batch" className="form_input" required placeholder="Enter Your Batch..." />
+                <Input id="batch" name="batch" className="form_input" defaultValue={batchValue} readOnly />
                 {errors.batch && <p className="form_error">{errors.batch}</p>}
             </div>
 
@@ -83,7 +88,6 @@ const CampusVisitForm = () => {
                 {errors.description && <p className="form_error">{errors.description}</p>}
             </div>
 
-            {/* Date of Visit Field */}
             <div className="flex flex-col gap-2 mt-4">
                 <label htmlFor="comingDate" className="form_label">Date of Visit</label>
                 <Popover>
@@ -91,7 +95,7 @@ const CampusVisitForm = () => {
                         <Button
                             variant="outline"
                             className={cn(
-                                "w-full justify-start text-left font-normal",
+                                "w-full justify-start text-left font-normal bg-amber-50 form_datepicker",
                                 !visitDate && "text-muted-foreground"
                             )}
                         >
@@ -105,6 +109,7 @@ const CampusVisitForm = () => {
                             selected={visitDate}
                             onSelect={setVisitDate}
                             initialFocus
+                            disabled={(date) => date < new Date().setHours(0, 0, 0, 0)}
                         />
                     </PopoverContent>
                 </Popover>

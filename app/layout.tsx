@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import React from "react";
-import Navbar from "@/components/navbar/Navbar";
 import { SessionProvider } from "next-auth/react";
 
 // import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner"
+import Header from "@/components/utils/Header";
 
 // const workSans = localFont({
 //   src: [
@@ -67,7 +67,8 @@ export default function RootLayout({
                                      children,
                                    }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>)
+{
   return (
      <html lang="en">
      <body
@@ -75,7 +76,7 @@ export default function RootLayout({
         className={"bg-amber-50"}
      >
      <SessionProvider>
-     <Navbar/>
+     <Header/>
 
      {children}
      <Toaster />
