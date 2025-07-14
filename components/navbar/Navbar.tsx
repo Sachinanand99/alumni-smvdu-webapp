@@ -1,174 +1,144 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { toast } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
 
 import {
     NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
     NavigationMenuList,
+    NavigationMenuItem,
     NavigationMenuTrigger,
+    NavigationMenuContent,
+    NavigationMenuLink,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-import { cn } from "@/lib/utils";
-
-const Navbar = () => {
+const Navbar = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
+    const { data: session } = useSession();
     const pathname = usePathname();
-    const { data: session, status } = useSession();
-    const [clientSession, setClientSession] = useState(null);
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (status === "authenticated") {
-            setClientSession(session);
-        } else {
-            setClientSession(null);
-        }
-    }, [session, status]);
-
-
-    useEffect(() => {
-        console.log("Session Status:", status);
-        console.log("Session Data:", session);
-    }, [session, status]);
-
-    if (!isMounted) return null;
-
-    const email = clientSession?.user?.email;
-    const isUniversityEmail = email?.endsWith("@smvdu.ac.in");
-
-    const isSuperAdmin = true;
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
-        <header className="px-5 py-3 bg-white shadow-sm font-work-sans">
-            <nav className="flex justify-between items-center">
-                <Link href="/" className="">
-                    <Image src="/logo.png" alt="logo" width={48} height={48} />
-                </Link>
-                <div className="flex items-center justify-end gap-5 text-black">
+        <header className="bg-white shadow-sm font-work-sans sticky top-0 z-50 w-full">
+            <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 py-3">
+                <div className="flex items-center justify-between w-full md:w-auto">
+                    <Link href="/" className="flex-shrink-0">
+                        <Image src="/logo.png" alt="logo" width={48} height={48} priority />
+                    </Link>
+                    <button
+                        className="md:hidden text-lg font-semibold border px-3 py-1 rounded-md"
+                        onClick={() => setMobileOpen(prev => !prev)}
+                    >
+                        ☰
+                    </button>
+                </div>
+
+                {/* Navigation */}
+                <nav
+                    className={cn(
+                        "w-full md:w-auto md:flex md:items-center md:gap-6 transition-all duration-300 ease-in-out",
+                        mobileOpen ? "block mt-4 md:mt-0" : "hidden md:block"
+                    )}
+                >
                     <NavigationMenu>
-                        <NavigationMenuList>
+                        <NavigationMenuList className="flex flex-col gap-3 md:flex-row md:items-center">
                             <NavigationMenuItem>
                                 <NavigationMenuLink
                                     href="/"
-                                    className={`${navigationMenuTriggerStyle()} ${
-                                        pathname === "/" ? "active-link" : ""
-                                    }`}
+                                    className={cn(navigationMenuTriggerStyle(), pathname === "/" && "active-link")}
                                 >
                                     Home
                                 </NavigationMenuLink>
                             </NavigationMenuItem>
 
-                            <>
-                                {isSuperAdmin ? (
-                                    <NavigationMenuItem>
-                                        <NavigationMenuTrigger>Events</NavigationMenuTrigger>
-                                        <NavigationMenuContent>
-                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[450px] ">
-                                                <ListItem title="View Events" href="/events" className={`${
-                                                    pathname === "/events" ? "active-link" : ""
-                                                }`}>
-                                                    View Latest Events.
-                                                </ListItem>
-                                                <ListItem title="Create Events" href="/events/create" className={`${pathname === "/events/create" ? "active-link" : ""}`}>
-                                                    Create new events.
-                                                </ListItem>
-                                            </ul>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-                                ) : (
-                                    <NavigationMenuItem>
-                                        <NavigationMenuLink
-                                            href="/events"
-                                            className={`${navigationMenuTriggerStyle()} ${
-                                                pathname === "/events" ? "active-link" : ""
-                                            }`}
-                                        >
-                                            Events
-                                        </NavigationMenuLink>
-                                    </NavigationMenuItem>
-                                )}
-                            </>
-
+                            {isSuperAdmin ? (
+                                <NavigationMenuItem>
+                                    <NavigationMenuTrigger>Events</NavigationMenuTrigger>
+                                    <NavigationMenuContent >
+                                        <ul className="grid gap-3 w-full sm:grid-cols-1 md:grid-cols-2 p-3">
+                                            <ListItem title="View Events" href="/events" className={pathname === "/events" && "active-link"}>
+                                                View Latest Events.
+                                            </ListItem>
+                                            <ListItem title="Create Events" href="/events/create" className={pathname === "/events/create" && "active-link"}>
+                                                Create new events.
+                                            </ListItem>
+                                        </ul>
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
+                            ) : (
+                                <NavigationMenuItem>
+                                    <NavigationMenuLink
+                                        href="/events"
+                                        className={cn(navigationMenuTriggerStyle(), pathname === "/events" && "active-link")}
+                                    >
+                                        Events
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
+                            )}
 
                             <NavigationMenuItem>
                                 <NavigationMenuTrigger>Alumni Directory</NavigationMenuTrigger>
                                 <NavigationMenuContent>
-                                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[450px] ">
-                                        <ListItem title="List View" href="/alumni/list-alumni" className={`${
-                                            pathname === "/alumni/list-alumni" ? "active-link" : ""
-                                        }`}>
+                                    <ul className="grid gap-3 w-full sm:grid-cols-1 md:grid-cols-2 p-3">
+                                        <ListItem title="List View" href="/alumni/list-alumni" className={pathname === "/alumni/list-alumni" && "active-link"}>
                                             Discover our vibrant alumni network.
                                         </ListItem>
-                                        <ListItem title="Map View" href="/alumni/map-alumni" className={`${pathname === "/alumni/map-alumni" ? "active-link" : ""}`}>
-                                            Get insights into alumni of SMVDU all around the globe.
+                                        <ListItem title="Map View" href="/alumni/map-alumni" className={pathname === "/alumni/map-alumni" && "active-link"}>
+                                            Explore global alumni.
                                         </ListItem>
                                     </ul>
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
 
-                            <>
+                            <NavigationMenuItem>
+                                <NavigationMenuTrigger>Services</NavigationMenuTrigger>
+                                <NavigationMenuContent >
+                                    <ul className="grid gap-3 w-full sm:grid-cols-1 md:grid-cols-2 p-3">
+                                        <ListItem title="Alumni Info" href="/alumni/alumni-info" className={pathname === "/alumni/alumni-info" && "active-link"}>
+                                            Update your alumni profile.
+                                        </ListItem>
+                                        <ListItem title="Campus Visit" href="/alumni/visit-campus" className={pathname === "/alumni/visit-campus" && "active-link"}>
+                                            Schedule a campus visit.
+                                        </ListItem>
+                                        <ListItem title="Contact Us" href="/#contact">
+                                            Get in touch.
+                                        </ListItem>
+                                    </ul>
+                                </NavigationMenuContent>
+                            </NavigationMenuItem>
+
+                            {session ? (
                                 <NavigationMenuItem>
-                                    <NavigationMenuTrigger>Services</NavigationMenuTrigger>
+                                    <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
                                     <NavigationMenuContent>
-                                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[450px] ">
-                                            <ListItem title="Alumni Information" href="/alumni/alumni-info" className={`${pathname === "/alumni/alumni-info" ? "active-link" : ""}`}>
-                                                Update the alumni information to us.
+                                        <ul className="grid gap-3 w-full sm:grid-cols-1 md:grid-cols-2 p-3">
+                                            <ListItem title="Update Email" href="/profile/profile-setup">
+                                                Personal profile registration.
                                             </ListItem>
-                                            <ListItem title="Campus Visit" href="/alumni/visit-campus" className={`${pathname === "/alumni/visit-campus" ? "active-link" : ""}`}>
-                                                Visiting the campus for mentorship.
-                                            </ListItem>
-                                            <ListItem title="Contact Us" href="/#contact">
-                                                Contact Us for queries.
-                                            </ListItem>
+                                            <li>
+                                                <button
+                                                    onClick={() => {
+                                                        toast("👋 Logged out successfully");
+                                                        setTimeout(() => signOut({}), 500);
+                                                    }}
+                                                    className="w-full px-3 py-2 text-left border border-red-500 rounded-md text-red-600 hover:bg-red-500 hover:text-white transition"
+                                                >
+                                                    Logout
+                                                </button>
+                                            </li>
                                         </ul>
                                     </NavigationMenuContent>
                                 </NavigationMenuItem>
-                            </>
-
-                            {clientSession && (
-                                <>
-                                    <NavigationMenuItem>
-                                        <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
-                                        <NavigationMenuContent>
-                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[450px] ">
-                                                <ListItem title="Change your Email ID" href="/profile/profile-setup">
-                                                    Register your personal profile.
-                                                </ListItem>
-                                                <li>
-                                                    <button
-                                                        onClick={() => {
-                                                            signOut();
-                                                            setClientSession(null);
-                                                        }}
-                                                        className="block w-3/4 text-left py-2 px-4 border border-red-500 rounded-md text-red-600 hover:bg-red-500 hover:text-white transition-colors"
-                                                    >
-                                                        Logout
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-                                </>
-                            )}
-
-                            {!clientSession && (
+                            ) : (
                                 <NavigationMenuItem>
                                     <NavigationMenuLink
                                         href="/auth/login"
-                                        className={`${navigationMenuTriggerStyle()} ${
-                                            pathname === "/auth/login" ? "active-link" : ""
-                                        }`}
+                                        className={cn(navigationMenuTriggerStyle(), pathname === "/auth/login" && "active-link")}
                                     >
                                         Login
                                     </NavigationMenuLink>
@@ -176,36 +146,45 @@ const Navbar = () => {
                             )}
                         </NavigationMenuList>
                     </NavigationMenu>
-                </div>
-            </nav>
+                </nav>
+            </div>
         </header>
     );
 };
 
 export default Navbar;
 
-const ListItem = React.forwardRef<
-    React.ElementRef<"a">,
-    React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-    return (
-        <li>
-            <NavigationMenuLink asChild>
-                <a
-                    ref={ref}
-                    className={cn(
-                        "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                        className
-                    )}
-                    {...props}
-                >
-                    <div className="text-sm font-medium leading-none">{title}</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        {children}
-                    </p>
-                </a>
-            </NavigationMenuLink>
-        </li>
-    );
-});
+// ListItem component
+const ListItem = React.forwardRef(
+    (
+        { className, title, children, href, ...props }: {
+            className?: string;
+            title: string;
+            children?: React.ReactNode;
+            href: string;
+        },
+        ref: React.Ref<HTMLAnchorElement>
+    ) => {
+        return (
+            <li>
+                <NavigationMenuLink asChild>
+                    <a
+                        ref={ref}
+                        href={href}
+                        className={cn(
+                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition hover:bg-accent hover:text-accent-foreground",
+                            className
+                        )}
+                        {...props}
+                    >
+                        <div className="text-sm font-semibold">{title}</div>
+                        {children && (
+                            <p className="text-sm text-muted-foreground line-clamp-2">{children}</p>
+                        )}
+                    </a>
+                </NavigationMenuLink>
+            </li>
+        );
+    }
+);
 ListItem.displayName = "ListItem";
