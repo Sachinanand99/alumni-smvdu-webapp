@@ -12,7 +12,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Missing entry number." }, { status: 400 });
         }
 
-        const filePath = path.join(process.cwd(), "init/data.xlsx");
+        const filePath = path.join(process.cwd(), "public/data.xlsx");
 
         if (!fs.existsSync(filePath)) {
             return NextResponse.json({ error: "Excel file not found." }, { status: 404 });

@@ -6,7 +6,8 @@ import { auth } from "@/auth";
 
 export async function POST(req: Request) {
     const session = await auth();
-    if (!session || !session.user?.email) {
+
+    if (!session?.user?.email) {
         return NextResponse.json(
             { error: "Unauthorized access. Please sign in." },
             { status: 401 }
@@ -15,20 +16,22 @@ export async function POST(req: Request) {
 
     try {
         const formData = await req.json();
-
         const clean = (val: string) => val?.toString().trim() || "";
 
         const entryNumber = clean(formData.entryNumber);
-        const admissionYear = `${parseInt(entryNumber.substring(0, 2)) + 4}`;
+        const email = clean(formData.email);
+        const admissionYear = `20${parseInt(entryNumber.slice(0, 2)) + 4}`;
 
-        const filePath = path.join(process.cwd(), "init/data.xlsx");
+        const filePath = path.join(process.cwd(), "public", "data.xlsx");
+        const tempPath = filePath + ".tmp";
+
         if (!fs.existsSync(filePath)) {
             return NextResponse.json({ error: "Excel file not found!" }, { status: 404 });
         }
 
-        const fileBuffer = fs.readFileSync(filePath);
-        const workbook = xlsx.read(fileBuffer, { type: "buffer" });
+        const workbook = xlsx.read(fs.readFileSync(filePath), { type: "buffer" });
 
+        // Ensure the sheet for the admission year exists
         if (!workbook.SheetNames.includes(admissionYear)) {
             workbook.SheetNames.push(admissionYear);
             workbook.Sheets[admissionYear] = xlsx.utils.json_to_sheet([]);
@@ -37,25 +40,12 @@ export async function POST(req: Request) {
         const sheet = workbook.Sheets[admissionYear];
         const sheetData = xlsx.utils.sheet_to_json<any>(sheet);
 
-        const isDuplicate = sheetData.some((row) =>
-            row.entryNumber?.toLowerCase() === entryNumber.toLowerCase() ||
-            row.email?.toLowerCase() === clean(formData.email).toLowerCase()
-        );
-
-        if (isDuplicate) {
-            return NextResponse.json(
-                { error: "User already submitted their information." },
-                { status: 409 }
-            );
-        }
-
         const newEntry = {
-            Sno: sheetData.length + 1,
             fullName: clean(formData.fullName),
-            email: clean(formData.email),
+            email,
             phone: clean(formData.phone),
             entryNumber,
-            Gender: clean(formData.gender),
+            gender: clean(formData.gender),
             department: clean(formData.department),
             degree: clean(formData.degree),
             professionalSector: clean(formData.professionalSector),
@@ -67,26 +57,52 @@ export async function POST(req: Request) {
             companyOrInstitute: clean(formData.companyOrInstitute),
         };
 
-        console.log(`[Alumni Entry Saved] ${entryNumber}`, newEntry);
+        let updated = false;
+        let updatedIndex = -1;
 
-        sheetData.push(newEntry);
-        workbook.Sheets[admissionYear] = xlsx.utils.json_to_sheet(sheetData);
-
-        // TODO: permission error fix later
-        try {
-            xlsx.writeFile(workbook, filePath);
-        } catch (err) {
-            console.error("Failed to write Excel:", err);
-            return NextResponse.json({ error: "Write permission denied or file locked." }, { status: 500 });
+        // Check for existing entry by entryNumber or email
+        for (let i = 0; i < sheetData.length; i++) {
+            const row = sheetData[i];
+            if (
+                row.entryNumber?.toLowerCase() === entryNumber.toLowerCase() ||
+                row.email?.toLowerCase() === email.toLowerCase()
+            ) {
+                sheetData[i] = { ...row, ...newEntry, Sno: row.Sno || i + 1 };
+                updated = true;
+                updatedIndex = i;
+                break;
+            }
         }
+
+        // If no match found, add as new
+        if (!updated) {
+            const Sno = sheetData.length + 1;
+            sheetData.push({ Sno, ...newEntry });
+            updatedIndex = Sno - 1;
+        }
+
+        // Write back to Excel
+        workbook.Sheets[admissionYear] = xlsx.utils.json_to_sheet(sheetData);
+        try {
+            const buffer = xlsx.write(workbook, { bookType: "xlsx", type: "buffer" });
+            fs.writeFileSync(tempPath, buffer);
+            fs.renameSync(tempPath, filePath);
+            console.log(`✅ Entry ${updated ? "updated" : "added"}: ${entryNumber}`);
+        } catch (err) {
+            console.error("❌ Failed to write Excel:", err);
+            return NextResponse.json({ error: "Failed to write Excel file." }, { status: 500 });
+        }
+
         return NextResponse.json({
             success: true,
-            message: "Data successfully updated!",
+            message: updated
+                ? "Data successfully updated!"
+                : "Data successfully added!",
             sheet: admissionYear,
-            row: newEntry.Sno,
+            row: updatedIndex + 1,
         });
     } catch (error) {
-        console.error("Error updating Excel file:", error);
+        console.error("❌ Error updating Excel file:", error);
         return NextResponse.json({ error: "Failed to update Excel file." }, { status: 500 });
     }
 }

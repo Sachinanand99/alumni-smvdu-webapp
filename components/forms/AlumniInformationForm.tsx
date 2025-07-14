@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { AlumniInformationFormSchema } from "@/lib/validation";
 import z from "zod";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { useRouter } from "next/navigation";
 
 const getCleanName = (name: string) => {
@@ -25,7 +25,6 @@ const getDegreeType = (entryNumber: string) => {
 };
 
 const CampusVisitRequestForm = ({ userInfo }) => {
-    const { toast } = useToast();
     const router = useRouter();
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -95,13 +94,12 @@ const CampusVisitRequestForm = ({ userInfo }) => {
             const responseData = await response.json();
 
             if (response.ok && responseData.success) {
-                toast({
-                    title: "✅ Success",
-                    description: "Your request has been recorded successfully.",
-                });
+                toast(
+                    "✅ Your request has been recorded successfully."
+                );
                 router.push("/");
             } else {
-                throw new Error(responseData.error || "Failed to update Excel.");
+                new Error(responseData.error || "Failed to update Excel.");
             }
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -112,11 +110,9 @@ const CampusVisitRequestForm = ({ userInfo }) => {
 
                 setErrors(error.flatten().fieldErrors as any);
 
-                toast({
-                    title: "❌ Validation Error",
-                    description: "Please check the highlighted fields and try again.",
-                    variant: "destructive",
-                });
+                toast(
+                    "❌ Please check the highlighted fields and try again."
+                );
 
                 return { status: "ERROR" };
             }
@@ -126,11 +122,9 @@ const CampusVisitRequestForm = ({ userInfo }) => {
                 console.error("Unexpected error during submission:", error.message);
             }
 
-            toast({
-                title: "❌ Unexpected Error",
-                description: "Something went wrong while submitting the form.",
-                variant: "destructive",
-            });
+            toast(
+                "❌ Something went wrong while submitting the form."
+   );
 
             return { status: "ERROR", error: "unexpected failure" };
         }

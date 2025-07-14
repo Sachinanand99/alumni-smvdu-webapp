@@ -4,7 +4,7 @@ import * as xlsx from "xlsx";
 
 export default async function readXlsxData(fields: string[] = []) {
     try {
-        const filePath = path.join(process.cwd(), "init/data.xlsx");
+        const filePath = path.join(process.cwd(), "public/data.xlsx");
 
         if (!fs.existsSync(filePath)) {
             console.error("File not found:", filePath);

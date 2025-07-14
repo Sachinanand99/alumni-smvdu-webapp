@@ -37,7 +37,7 @@ async function fetchAlumniCoordinates(alumniData: any[]) {
 
 export async function GET() {
     try {
-        const filePath = path.join(process.cwd(), "init/data.xlsx");
+        const filePath = path.join(process.cwd(), "public/data.xlsx");
 
         if (!fs.existsSync(filePath)) {
             return NextResponse.json({ error: "File not found" }, { status: 404 });

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Send, Calendar as CalendarIcon } from "lucide-react";
 import { eventSchema } from "@/lib/validation";
 import z from "zod";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { useRouter } from "next/navigation";
 import { createEvent } from "@/lib/actions";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -24,7 +24,6 @@ const EventForm = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-    const { toast } = useToast();
     const router = useRouter();
 
     const generateSlug = (title: string, date?: Date) => {
@@ -92,10 +91,9 @@ const EventForm = () => {
             const result = await createEvent(prevState, formValues);
 
             if (result.status === "SUCCESS") {
-                toast({
-                    title: "Success",
-                    description: "Your event has been created successfully!",
-                });
+                toast(
+                    "✅ Your event has been created successfully!"
+);
                 router.push(`/events/${result._id}`);
             }
 
@@ -103,19 +101,15 @@ const EventForm = () => {
             if (error instanceof z.ZodError) {
                 const fieldErrors = error.flatten().fieldErrors;
                 setErrors(fieldErrors as unknown as Record<string, string>);
-                toast({
-                    title: "Error",
-                    description: "Please check your input and try again.",
-                    variant: "destructive"
-                });
+                toast(
+                    "❌ Please check your input and try again."
+                );
                 return { ...prevState, error: "Validation failed", status: "ERROR" };
             }
 
-            toast({
-                title: "Error",
-                description: "An unexpected error has occurred.",
-                variant: "destructive"
-            });
+            toast(
+                "❌ An unexpected error has occurred."
+            );
 
             return {
                 ...prevState,
