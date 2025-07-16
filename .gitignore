@@ -41,9 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 #init data
-init/*.pdf
-init/*.xlsx
-init/*.csv
+init
 
 #temporary files
 temp.*
