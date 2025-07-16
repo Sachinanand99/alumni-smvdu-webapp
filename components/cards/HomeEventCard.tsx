@@ -15,7 +15,7 @@ const EventCard = ({ event }: { event: EventDocument }) => {
   const parsedContent = md.render(event?.description || "");
 
   return (
-     <li className="home_event-card shadow-orange-200 group">
+     <li className="home_event-card shadow-orange-200 group place-self-center">
        <div className="flex justify-between items-center">
          <p className="home_event-card_date">{format(new Date(event.start_date), "PPP")}</p>
          <div className="flex gap-1.5">

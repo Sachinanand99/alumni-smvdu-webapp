@@ -4,7 +4,7 @@ import { XIcon } from "lucide-react";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 
-const SearchFormReset = () => {
+const EventSearchFormReset = () => {
   const reset = () => {
     const form = document.querySelector(".search-form") as HTMLFormElement;
 
@@ -21,4 +21,4 @@ const SearchFormReset = () => {
   );
 };
 
-export default SearchFormReset;
+export default EventSearchFormReset;

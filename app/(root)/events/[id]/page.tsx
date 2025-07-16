@@ -14,7 +14,7 @@ import DeleteEventButton from "@/components/utils/DeleteEventButton"
 import { auth } from "@/auth";
 import { isEventAdmin } from "@/lib/utils";
 import { getGalleryByEventId } from "@/lib/actions";
-import { GallerySection } from "@/components/utils/GallarySection";
+import { GallerySection } from "@/components/utils/GallerySection";
 import GalleryUploadForm from "@/components/forms/GalleryUploadForm";
 
 

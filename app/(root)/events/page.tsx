@@ -30,18 +30,21 @@ const Page = async ({ searchParams }: { searchParams: { query?: string; cat?: st
   const allEvents = JSON.parse(JSON.stringify(await EventModel.find({}).sort({ start_date: -1 })));
 
   return (
-      <>
-        <div className="flex gap-x-3 p-5">
+      <div className="flex flex-col lg:flex-row gap-3 p-5">
+        <div className="w-full lg:basis-[30%] flex justify-center lg:justify-start">
           <EventFilter query={q} events={allEvents} />
-          <ul className="flex flex-col flex-1 basis-[70%]">
-            {events.length > 0 ? (
-                events.map((post: EventDocument) => <EventCard key={post._id} event={post} />)
-            ) : (
-                <p className="no-results">No Events found</p>
-            )}
-          </ul>
         </div>
-      </>
+
+        <ul className="flex flex-col w-full lg:flex-1">
+          {events.length > 0 ? (
+              events.map((post: EventDocument) => (
+                  <EventCard key={post._id} event={post} />
+              ))
+          ) : (
+              <p className="text-center text-gray-500 py-5">No Events found</p>
+          )}
+        </ul>
+      </div>
   );
 };
 

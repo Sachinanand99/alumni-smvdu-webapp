@@ -11,6 +11,10 @@ const ProfileSetupPage = () => {
     const [personalEmail, setPersonalEmail] = useState("");
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const isStrongPassword = (pwd: string) =>
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(pwd);
+
 
     useEffect(() => {
         if (status === "loading") return;
@@ -22,6 +26,18 @@ const ProfileSetupPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
+
+        if (password !== confirmPassword) {
+            toast("🚨 Passwords do not match.");
+            setSubmitting(false);
+            return;
+        }
+
+        if (!isStrongPassword(password)) {
+            toast("❌ Password too weak. Must include upper, lower, digit, special character, and be 8+ chars.");
+            setSubmitting(false);
+            return;
+        }
 
         try {
             const res = await fetch("/api/auth/update-profile", {
@@ -81,6 +97,14 @@ const ProfileSetupPage = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="New Password"
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500"
+                    />
+                    <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm Password"
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500"
                     />

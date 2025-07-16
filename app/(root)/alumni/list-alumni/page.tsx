@@ -58,7 +58,7 @@ async function getMergedData() {
     return Array.from(alumniMap.values());
 }
 
-const Page = async ({ searchParams }: { searchParams: { query?: string; dept?: string ; page?: string } }) => {
+const Page = async ({ searchParams }: { searchParams: { query?: string; dept?: string; page?: string } }) => {
     const { query = "", dept = "all", page = "1" } = await searchParams;
     const currentPage = parseInt(page, 10) || 1;
     const pageSize = 50;
@@ -66,7 +66,14 @@ const Page = async ({ searchParams }: { searchParams: { query?: string; dept?: s
     const allAlumni = await getMergedData();
 
     const filteredAlumni = allAlumni.filter(person => {
-        const matchesQuery = query ? person.fullName?.toLowerCase().includes(query.toLowerCase()) : true;        const matchesDepartment = dept && dept !== "all" ? person.department === dept : true;
+        const matchesQuery = query
+            ? person.fullName?.toLowerCase().includes(query.toLowerCase())
+            : true;
+
+        const matchesDepartment = dept !== "all"
+            ? person.department === dept
+            : true;
+
         return matchesQuery && matchesDepartment;
     });
 
@@ -74,40 +81,61 @@ const Page = async ({ searchParams }: { searchParams: { query?: string; dept?: s
     const paginatedAlumni = filteredAlumni.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     return (
-        <div className="flex gap-x-3 p-5">
-            <AlumniFilter query={query} alumni={allAlumni} />
-            <div>
-                <div className="flex justify-center gap-4 mt-5">
+        <div className="flex flex-col lg:flex-row gap-6 p-4 lg:p-6">
+            <div className="w-full lg:max-w-xs">
+                <AlumniFilter query={query} alumni={allAlumni} />
+            </div>
+
+            <div className="flex-1 w-full">
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2">
                     {currentPage > 1 && (
-                        <a href={`?query=${encodeURIComponent(query)}&dept=${encodeURIComponent(dept)}&page=${currentPage - 1}`} className="px-4 py-2 bg-gray-200 rounded">
+                        <a
+                            href={`?query=${encodeURIComponent(query)}&dept=${encodeURIComponent(dept)}&page=${currentPage - 1}`}
+                            className="px-4 py-2 bg-gray-200 rounded text-sm"
+                        >
                             Previous
                         </a>
                     )}
-                    <span className="px-4 py-2 font-semibold">Page {currentPage} of {totalPages}</span>
+                    <span className="px-4 py-2 font-semibold text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
                     {currentPage < totalPages && (
-                        <a href={`?query=${encodeURIComponent(query)}&dept=${encodeURIComponent(dept)}&page=${currentPage + 1}`} className="px-4 py-2 bg-gray-200 rounded">
+                        <a
+                            href={`?query=${encodeURIComponent(query)}&dept=${encodeURIComponent(dept)}&page=${currentPage + 1}`}
+                            className="px-4 py-2 bg-gray-200 rounded text-sm"
+                        >
                             Next
                         </a>
                     )}
                 </div>
-                <ul className="flex flex-wrap gap-4 justify-center">
+
+                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-center mt-6">
                     {paginatedAlumni.length > 0 ? (
                         paginatedAlumni.map(person => (
-                            <AlumniCard key={person.entryNumber} alumni={person} />
+                            <AlumniCard key={person.entryNumber || person.fullName} alumni={person} />
                         ))
                     ) : (
-                        <p className="no-results">No Alumni Found</p>
+                        <p className="text-center text-gray-500 col-span-full">No Alumni Found</p>
                     )}
                 </ul>
-                <div className="flex justify-center gap-4 mt-5">
+
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
                     {currentPage > 1 && (
-                        <a href={`?query=${encodeURIComponent(query)}&dept=${encodeURIComponent(dept)}&page=${currentPage - 1}`} className="px-4 py-2 bg-gray-200 rounded">
+                        <a
+                            href={`?query=${encodeURIComponent(query)}&dept=${encodeURIComponent(dept)}&page=${currentPage - 1}`}
+                            className="px-4 py-2 bg-gray-200 rounded text-sm"
+                        >
                             Previous
                         </a>
                     )}
-                    <span className="px-4 py-2 font-semibold">Page {currentPage} of {totalPages}</span>
+                    <span className="px-4 py-2 font-semibold text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
                     {currentPage < totalPages && (
-                        <a href={`?query=${encodeURIComponent(query)}&dept=${encodeURIComponent(dept)}&page=${currentPage + 1}`} className="px-4 py-2 bg-gray-200 rounded">
+                        <a
+                            href={`?query=${encodeURIComponent(query)}&dept=${encodeURIComponent(dept)}&page=${currentPage + 1}`}
+                            className="px-4 py-2 bg-gray-200 rounded text-sm"
+                        >
                             Next
                         </a>
                     )}
@@ -118,3 +146,4 @@ const Page = async ({ searchParams }: { searchParams: { query?: string; dept?: s
 };
 
 export default Page;
+;

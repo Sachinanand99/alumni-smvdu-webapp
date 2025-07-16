@@ -37,9 +37,11 @@ const AlumniCard = ({ alumni }: { alumni: AlumniDocument }) => {
       </svg>
     `)}`;
 
+    const graduationYear = `20${parseInt(alumni.entryNumber.slice(0, 2)) + 4}`;
+
     return (
-        <li className="flex flex-col w-[300px] h-[350px] border border-gray-300 rounded-lg p-4 m-4 bg-white shadow-sm">
-            <div className="w-full h-[60%]">
+        <li className="alumni-card place-self-center">
+            <div className=" w-full h-[60%]">
                 <Image
                     src={imageSrc}
                     alt={`${alumni.fullName}'s profile picture`}
@@ -51,7 +53,7 @@ const AlumniCard = ({ alumni }: { alumni: AlumniDocument }) => {
 
             <div className="flex flex-col justify-between h-[40%] p-2">
                 <h3 className="text-lg font-bold">{alumni.fullName}</h3>
-                <p className="text-sm text-gray-600">Class of {alumni.graduationYear}</p>
+                <p className="text-sm text-gray-600">Passed out batch of {graduationYear}</p>
                 <p className="text-sm text-gray-800 font-medium">Company: {alumni.companyOrInstitute}</p>
                 <p className="text-xs text-gray-500">{alumni.professionalSector}</p>
             </div>

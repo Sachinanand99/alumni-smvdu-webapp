@@ -35,7 +35,7 @@ const CampusVisitRequestForm = ({ userInfo }) => {
         entryNumber: getEntryNumber(userInfo?.user?.name || ""),
         gender: "",
         department: "",
-        degree: "",
+        degree: "Computer Science & Engineering",
         professionalSector: "",
         income: "",
         countryOfResidence: "",
@@ -210,7 +210,7 @@ const CampusVisitRequestForm = ({ userInfo }) => {
                 <select
                     id="gender"
                     name="gender"
-                    className="form_input"
+                    className="form_input !py-3 !mx-3"
                     required
                     value={formValues.gender}
                     onChange={(e) =>
@@ -233,6 +233,7 @@ const CampusVisitRequestForm = ({ userInfo }) => {
                     name="department"
                     className="form_input"
                     required
+                    readOnly
                     placeholder="Enter Your Department..."
                     value={formValues.department}
                     onChange={(e) => setFormValues({ ...formValues, department: e.target.value })}

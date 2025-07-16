@@ -8,6 +8,8 @@ import { usePathname } from "next/navigation";
 import { toast } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
+// bug: some possible hydration ahead.
+
 import {
     NavigationMenu,
     NavigationMenuList,
@@ -103,7 +105,7 @@ const Navbar = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                 {/* Desktop Nav */}
                 <nav className="hidden md:block">
                     <NavigationMenu>
-                        <NavigationMenuList className="flex gap-0">
+                        <NavigationMenuList className="flex gap-2">
                             <NavigationMenuItem>
                                 <NavigationMenuLink
                                     href="/"
@@ -157,7 +159,7 @@ const Navbar = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
                             <NavigationMenuItem>
                                 {!hydrated || status === "loading" ? (
-                                    <div className="animate-pulse w-20 h-8 bg-muted rounded-md" />
+                                    <div className="animate-pulse w-12 h-8 bg-muted rounded-md" />
                                 ) : isLoggedIn ? (
                                     <>
                                         <NavigationMenuTrigger>Profile</NavigationMenuTrigger>

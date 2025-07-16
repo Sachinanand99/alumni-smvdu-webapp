@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/sonner";
 import { deleteGalleryImage } from "@/lib/actions";
+import Image from "next/image";
 
 interface Props {
     images: { _id: string; url: string; caption?: string }[];
@@ -31,9 +32,13 @@ export const GallerySection = ({ images, isAdmin }: Props) => {
         <section className="mt-8">
             <h2 className="text-xl font-semibold mb-2">Gallery</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {images.length === 0 && (
+                    <p>No images in Gallery..</p>
+                    )
+            }
                 {images.map(img => (
                     <div key={img._id} className="relative">
-                        <img src={img.url} alt={img.caption || "Gallery image"} className="rounded-lg shadow" />
+                        <Image src={img.url} alt={img.caption || "Gallery image"} className="rounded-lg shadow" />
                         {isAdmin && (
                             <Button
                                 size="sm"

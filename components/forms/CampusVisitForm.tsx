@@ -49,7 +49,7 @@ const CampusVisitForm = ({ user }: { user: UserDocument }) => {
             }
         } catch (error) {
             toast(
-                 "❌ An Unexpected Error has occurred",
+                 "❌ An Unexpected Error has occurred"
             );
         }
     };
@@ -65,6 +65,12 @@ const CampusVisitForm = ({ user }: { user: UserDocument }) => {
             </div>
 
             <div>
+                <label htmlFor="batch" className="form_label">Batch</label>
+                <Input id="batch" name="batch" className="form_input" defaultValue={batchValue} readOnly />
+                {errors.batch && <p className="form_error">{errors.batch}</p>}
+            </div>
+
+            <div>
                 <label htmlFor="email" className="form_label">Email</label>
                 <Input id="email" name="email" className="form_input" defaultValue={user?.personalEmail || ""} type="email" required />
                 {errors.email && <p className="form_error">{errors.email}</p>}
@@ -76,11 +82,6 @@ const CampusVisitForm = ({ user }: { user: UserDocument }) => {
                 {errors.phone && <p className="form_error">{errors.phone}</p>}
             </div>
 
-            <div>
-                <label htmlFor="batch" className="form_label">Batch</label>
-                <Input id="batch" name="batch" className="form_input" defaultValue={batchValue} readOnly />
-                {errors.batch && <p className="form_error">{errors.batch}</p>}
-            </div>
 
             <div>
                 <label htmlFor="description" className="form_label">Description</label>

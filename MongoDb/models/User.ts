@@ -9,6 +9,8 @@ export interface UserDocument extends Document {
     provider: "google" | "local",
     createdAt: Date,
     user?: UserDocument
+    resetToken:string,
+    resetTokenExpiry:Date,
 }
 
 const UserSchema = new Schema<UserDocument>({
@@ -23,6 +25,8 @@ const UserSchema = new Schema<UserDocument>({
     profilePicture: {type: String},
     provider: {type: String, required: true, enum: ["google", "local"]},
     createdAt: {type: Date, default: Date.now},
+    resetToken: { type: String },
+    resetTokenExpiry: { type: Number },
 });
 
 

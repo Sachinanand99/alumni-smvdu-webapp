@@ -15,7 +15,7 @@ export default function ContactMap({
     longitude: number;
 }) {
     return (
-        <div className="home_map-card grow-1">
+        <div className="home_map-card ">
             <Map
                 initialViewState={{latitude, longitude, zoom: 12}}
                 mapboxAccessToken={apiKey}

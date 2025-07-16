@@ -99,7 +99,7 @@ export default async function Home({
 
             <section className="px-6 py-10 max-w-7xl mx-auto">
                 <p className="font-semibold text-[30px] text-black">Events</p>
-                <ul className="mt-7 grid md:grid-cols-3 sm:grid-cols-2 gap-5">
+                <ul className="mt-7 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-5">
                     {events.length > 0 ? (
                         events.slice(0, 6).map((event) => (
                             <HomeEventCard key={event._id.toString()} event={event} />
@@ -112,7 +112,7 @@ export default async function Home({
 
             <section className="px-6 py-10 max-w-7xl mx-auto">
                 <p className="font-semibold text-[30px] text-black">Alumni</p>
-                <ul className="mt-7 grid md:grid-cols-3 sm:grid-cols-2 gap-5">
+                <ul className="mt-7 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-5">
                     {mergedAlumni.length > 0 ? (
                         mergedAlumni.map((person, idx) => (
                             <AlumniCard
@@ -128,7 +128,7 @@ export default async function Home({
 
             <section className="px-6 py-10 max-w-7xl mx-auto" id="contact">
                 <p className="font-semibold text-[30px] text-black">Contact Us</p>
-                <div className="flex py-5 gap-3 justify-items-start flex-wrap">
+                <div className="flex py-5 gap-3 justify-evenly flex-wrap">
                     <ContactCard />
                     <ContactMap
                         apiKey={apiKey}
