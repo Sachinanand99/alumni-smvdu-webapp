@@ -20,6 +20,7 @@ export async function POST(req: Request) {
 
         const entryNumber = clean(formData.entryNumber);
         const email = clean(formData.email);
+        const profilePicture = clean(formData.profilePicture);
         const admissionYear = `20${parseInt(entryNumber.slice(0, 2)) + 4}`;
 
         const filePath = path.join(process.cwd(), "public", "data.xlsx");
@@ -54,6 +55,7 @@ export async function POST(req: Request) {
             linkedinProfile: clean(formData.linkedinProfile),
             twitterProfile: clean(formData.twitterProfile),
             companyOrInstitute: clean(formData.companyOrInstitute),
+            profilePicture: clean(formData.profilePicture),
         };
 
         let updated = false;

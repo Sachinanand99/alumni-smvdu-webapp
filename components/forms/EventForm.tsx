@@ -63,7 +63,7 @@ const EventForm = () => {
             const uploadFormData = new FormData();
             uploadFormData.append("file", imageFile);
 
-            const uploadRes = await fetch("/api/upload", {
+            const uploadRes = await fetch("/api/uploadEvents", {
                 method: "POST",
                 body: uploadFormData,
             });
@@ -73,7 +73,7 @@ const EventForm = () => {
                 new Error("Image upload failed.");
             }
 
-            const imageUrl = `/uploads/${uploadData.name}`;
+            const imageUrl = `/uploads/events/${uploadData.name}`;
 
             // 2. Prepare form values
             const formValues = {
@@ -194,8 +194,8 @@ const EventForm = () => {
             </div>
 
             <div>
-                <label htmlFor="location" className="form_label">Event Location</label>
-                <Input id="location" name="location" className="form_input" required placeholder="Enter event location" />
+                <label htmlFor="location" className="form_label">Event Venue</label>
+                <Input id="location" name="location" className="form_input" required placeholder="Enter event venue" />
                 {errors.location && <p className="form_error">{errors.location}</p>}
             </div>
 

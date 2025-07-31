@@ -17,7 +17,7 @@ async function fetchMongoData() {
 }
 
 async function getMergedData() {
-    const excelData = await readXlsxData(["fullName", "entryNumber", "companyOrInstitute", "professionalSector"]);
+    const excelData = await readXlsxData(["fullName", "entryNumber", "companyOrInstitute", "professionalSector", "profilePicture"]);
     const mongoData = await fetchMongoData();
 
     const alumniMap = new Map();
@@ -48,7 +48,9 @@ async function getMergedData() {
             alumniMap.set(entry.entryNumber, {
                 ...entry,
                 universityEmail: email,
-                profilePicture: matchingMongoEntry?.profilePicture || null,
+                profilePicture: entry.profilePicture?.trim()
+                    ? entry.profilePicture
+                    : matchingMongoEntry?.profilePicture || null,
                 companyOrInstitute: entry.companyOrInstitute ? [entry.companyOrInstitute.trim()] : [],
                 professionalSector: entry.professionalSector ? [entry.professionalSector.trim()] : []
             });

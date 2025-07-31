@@ -25,7 +25,6 @@ const getColorByInitials = (initials: string) => {
 const AlumniCard = ({ alumni }: { alumni: AlumniDocument }) => {
     const initials = getInitials(alumni.fullName);
     const bgColor = getColorByInitials(initials);
-
     const imageSrc = alumni.profilePicture
         ? alumni.profilePicture
         : `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -36,7 +35,6 @@ const AlumniCard = ({ alumni }: { alumni: AlumniDocument }) => {
         </text>
       </svg>
     `)}`;
-
     const graduationYear = `20${parseInt(alumni.entryNumber.slice(0, 2)) + 4}`;
 
     return (

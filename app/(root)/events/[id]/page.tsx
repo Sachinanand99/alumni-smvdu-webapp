@@ -79,7 +79,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
          <section id="event-details">
            <div className="mb-6 p-4 bg-gray-100 rounded-md">
             <span className="inline-flex items-center gap-1">
-              <MapPin /> <strong>Address:</strong> {post.location}
+              <MapPin /> <strong>Venue:</strong> {post.location}
             </span>
            </div>
            <div className="p-4 bg-gray-100 rounded-md">

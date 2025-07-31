@@ -88,7 +88,7 @@ export async function updateEvent(
     const existing = await EventModel.findById(eventId).lean();
 
     if (existing?.image && existing.image !== formValues.image) {
-      const oldImagePath = path.join(process.cwd(), "public/uploads", existing.image);
+      const oldImagePath = path.join(process.cwd(), "public/uploads/events", existing.image);
       if (fs.existsSync(oldImagePath)) {
         fs.unlinkSync(oldImagePath);
       }
@@ -139,11 +139,11 @@ export async function deleteEvent(id: string) {
     const existing = await EventModel.findById(id).lean();
 
     if (existing?.image) {
-      const mainImageName = existing.image.startsWith("/uploads/")
-          ? existing.image.replace("/uploads/", "")
+      const mainImageName = existing.image.startsWith("/uploads/events")
+          ? existing.image.replace("/uploads/events", "")
           : existing.image;
 
-      const mainImagePath = path.join(process.cwd(), "public/uploads", mainImageName);
+      const mainImagePath = path.join(process.cwd(), "public/uploads/events", mainImageName);
       if (fs.existsSync(mainImagePath)) {
         fs.unlinkSync(mainImagePath);
       }
@@ -153,7 +153,7 @@ export async function deleteEvent(id: string) {
 
     for (const img of galleryImages) {
       const fileName = path.basename(img.url);
-      const filePath = path.join(process.cwd(), "public/uploads", fileName);
+      const filePath = path.join(process.cwd(), "public/uploads/events", fileName);
 
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
@@ -199,12 +199,12 @@ export const deleteGalleryImage = async (imageId: string) => {
   const eventId = image?.eventId?.toString();
 
   if (image?.url) {
-    const imagePath = path.join(process.cwd(), "public/uploads", path.basename(image.url));
+    const imagePath = path.join(process.cwd(), "public/uploads/events", path.basename(image.url));
     if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
   }
 
   await GalleryModel.findByIdAndDelete(imageId);
-  if (eventId) revalidatePath(`/events/${eventId}`);
+  if (eventId) revalidatePath(`/events/${eventId}`);x
 
   return { status: "SUCCESS", imageId };
 };

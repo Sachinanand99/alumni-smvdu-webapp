@@ -40,7 +40,7 @@ const EventCard = ({ event }: { event: EventDocument }) => {
               <p className="mt-4">No details provided</p>
            )}
          </span>
-         <Image width={100} height={100} src={event.image} alt="placeholder" className="home_evnet-card_img" />
+         <Image width={100} height={100} src={event.image} alt="placeholder" className="home_evnet-card_img object-cover w-[100px] h-[100px] rounded" />
        <div className="flex-between gap-3 mt-5">
          <Button className="home_event-card_btn" asChild>
            <Link href={`/events/${event._id}`}>

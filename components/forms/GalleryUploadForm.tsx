@@ -34,7 +34,7 @@ const GalleryUploadForm = ({ eventId }: { eventId: string }) => {
                 return;
             }
 
-            const imageUrl = `/uploads/${uploadData.name}`;
+            const imageUrl = `/uploads/events/${uploadData.name}`;
             const res = await addGalleryImage(eventId, imageUrl, caption);
             if (res.status === "SUCCESS") {
                 toast("✅ Image added to gallery.");

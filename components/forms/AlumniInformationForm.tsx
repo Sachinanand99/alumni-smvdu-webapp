@@ -24,9 +24,13 @@ const getDegreeType = (entryNumber: string) => {
     return "";
 };
 
+// Optimization todo: remove images if already in public/alumni directory to free up space only from xlsx data.
+
 const CampusVisitRequestForm = ({ userInfo }) => {
     const router = useRouter();
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const defaultFormValues = {
         fullName: getCleanName(userInfo?.user?.name || ""),
@@ -43,9 +47,18 @@ const CampusVisitRequestForm = ({ userInfo }) => {
         linkedinProfile: "",
         twitterProfile: "",
         companyOrInstitute: "",
+        profilePicture: "",
     };
 
     const [formValues, setFormValues] = useState(defaultFormValues);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
 
     useEffect(() => {
         const fetchPrefill = async () => {
@@ -78,10 +91,29 @@ const CampusVisitRequestForm = ({ userInfo }) => {
         fetchPrefill();
     }, [defaultFormValues.entryNumber]);
 
-
     const handleFormSubmit = async (prevState: any, formData: FormData) => {
         try {
-            const formValuesObj = Object.fromEntries(formData.entries());
+            const rawValues = Object.fromEntries(formData.entries());
+            let imageUrl = "";
+
+            if (imageFile) {
+                const uploadFormData = new FormData();
+                uploadFormData.append("file", imageFile);
+
+                const uploadRes = await fetch("/api/uploadProfile", {
+                    method: "POST",
+                    body: uploadFormData,
+                });
+
+                const uploadData = await uploadRes.json();
+                if (!uploadData.success) new Error("Image upload failed.");
+                imageUrl = `/uploads/alumni/${uploadData.name}`;
+            }
+
+            const formValuesObj = {
+                ...rawValues,
+                profilePicture: imageUrl,
+            };
 
             await AlumniInformationFormSchema.parseAsync(formValuesObj);
 
@@ -94,42 +126,23 @@ const CampusVisitRequestForm = ({ userInfo }) => {
             const responseData = await response.json();
 
             if (response.ok && responseData.success) {
-                toast(
-                    "✅ Your request has been recorded successfully."
-                );
+                toast("✅ Your request has been recorded successfully.");
                 router.push("/");
             } else {
-                new Error(responseData.error || "Failed to update Excel.");
+                throw new Error(responseData.error || "Failed to update Excel.");
             }
         } catch (error) {
             if (error instanceof z.ZodError) {
-                setFormValues((prev) => ({
-                    ...prev,
-                    ...formValues,
-                }));
-
                 setErrors(error.flatten().fieldErrors as any);
-
-                toast(
-                    "❌ Please check the highlighted fields and try again."
-                );
-
+                toast("❌ Please check the highlighted fields and try again.");
                 return { status: "ERROR" };
             }
 
-
-            if (error instanceof Error) {
-                console.error("Unexpected error during submission:", error.message);
-            }
-
-            toast(
-                "❌ Something went wrong while submitting the form."
-   );
-
+            console.error("Unexpected error during submission:", error);
+            toast("❌ Something went wrong while submitting the form.");
             return { status: "ERROR", error: "unexpected failure" };
         }
     };
-
 
     const [state, formAction, isPending] = useActionState(handleFormSubmit, {
         status: "INITIAL",
@@ -185,6 +198,20 @@ const CampusVisitRequestForm = ({ userInfo }) => {
                 />
                 {errors.phone && <p className="form_error">{errors.phone}</p>}
             </div>
+
+            <div>
+                <label htmlFor="profilePicture" className="form_label">Event Image</label>
+                <Input
+                    id="profilePicture"
+                    name="profilePicture"
+                    className="form_profilePic_input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                />
+                {errors.profilePicture && <p className="form_error">{errors.profilePicture}</p>}
+            </div>
+
 
             <div>
                 <label htmlFor="entryNumber" className="form_label">

@@ -159,7 +159,7 @@
   }
 
   .home_event-card {
-    @apply bg-white border-[3px] border-black py-6 px-5 rounded-[22px] shadow-sm hover:border-primary transition-all duration-500 hover:shadow-md hover:bg-[#F7F7F7];
+    @apply bg-white border-[3px] border-black py-6 px-5 rounded-[22px] shadow-sm hover:border-primary transition-all duration-500 hover:shadow-md hover:bg-[#F7F7F7] w-[300px];
   }
 
   .home_event-card_date {
@@ -253,5 +253,7 @@
   .alumni-card{
     @apply bg-white flex flex-wrap flex-col lg:flex-row p-4 m-4 w-[300px] h-[350px] border-[3px] border-black rounded-[22px] hover:border-primary transition-all duration-500 hover:shadow-md hover:bg-[#F7F7F7]  ;
   }
-
+  .form_profilePic_input{
+    @apply border-[3px] border-black px-5 py-7 text-[18px] text-black font-semibold rounded-full mt-3 placeholder:text-[#7D8087];
+  }
 }

@@ -38,7 +38,7 @@ export const GallerySection = ({ images, isAdmin }: Props) => {
             }
                 {images.map(img => (
                     <div key={img._id} className="relative">
-                        <Image src={img.url} alt={img.caption || "Gallery image"} className="rounded-lg shadow" />
+                        <Image src={img.url} alt={img.caption || "Gallery image"} height={300} width={300} className="rounded-lg shadow" />
                         {isAdmin && (
                             <Button
                                 size="sm"

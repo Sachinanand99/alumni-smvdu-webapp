@@ -76,17 +76,17 @@ const UpdateEventForm = ({ eventId }: { eventId: string }) => {
                 const uploadFormData = new FormData();
                 uploadFormData.append("file", imageFile);
 
-                const uploadRes = await fetch("/api/upload", {
+                const uploadRes = await fetch("/api/uploadEvents", {
                     method: "POST",
                     body: uploadFormData,
                 });
 
                 const uploadData = await uploadRes.json();
                 if (!uploadData.success) {
-                    throw new Error("Image upload failed.");
+                    new Error("Image upload failed.");
                 }
 
-                imageUrl = `/uploads/${uploadData.name}`;
+                imageUrl = `/uploads/events/${uploadData.name}`;
             }
 
             const updatedValues = {

@@ -80,7 +80,7 @@ const Navbar = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                 </Dropdown>
 
                                 <Dropdown label="Services">
-                                    <LinkItem href="/alumni/alumni-info" label="Alumni Info" active={pathname === "/alumni/alumni-info"} />
+                                    <LinkItem href="/alumni/alumni-info" label="Update Alumni Info" active={pathname === "/alumni/alumni-info"} />
                                     <LinkItem href="/alumni/visit-campus" label="Campus Visit" active={pathname === "/alumni/visit-campus"} />
                                     <LinkItem href="/#contact" label="Contact Us" active={pathname === "/#contact"} />
                                 </Dropdown>
@@ -89,7 +89,7 @@ const Navbar = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                     <div className="animate-pulse px-3 py-2 rounded-md bg-muted w-24 h-6" />
                                 ) : isLoggedIn ? (
                                     <Dropdown label="Profile">
-                                        <LinkItem href="/profile/profile-setup" label="Update Email" />
+                                        <LinkItem href="/profile/profile-setup" label="Update Email and Password" />
                                         <button onClick={handleLogout} className="text-left px-3 py-2 border border-red-500 text-red-600 rounded-md hover:bg-red-500 hover:text-white transition">
                                             Logout
                                         </button>
@@ -150,7 +150,7 @@ const Navbar = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                 <NavigationMenuTrigger>Services</NavigationMenuTrigger>
                                 <NavigationMenuContent>
                                     <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[450px]">
-                                        <ListItem href="/alumni/alumni-info" title="Alumni Info" className={pathname === "/alumni/alumni-info" && "active-link"}>Update your alumni profile.</ListItem>
+                                        <ListItem href="/alumni/alumni-info" title="Update Alumni Info" className={pathname === "/alumni/alumni-info" && "active-link"}>Update your alumni profile.</ListItem>
                                         <ListItem href="/alumni/visit-campus" title="Campus Visit" className={pathname === "/alumni/visit-campus" && "active-link"}>Schedule a campus visit.</ListItem>
                                         <ListItem href="/#contact" title="Contact Us">Get in touch.</ListItem>
                                     </ul>
@@ -165,7 +165,7 @@ const Navbar = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                         <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
                                         <NavigationMenuContent className={"absolute left-0 origin-top-right"}>
                                             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[450px]">
-                                                <ListItem href="/profile/profile-setup" title="Update Email" className={pathname === "/profile/profile-setup" && "active-link"}>Personal profile registration.</ListItem>
+                                                <ListItem href="/profile/profile-setup" title="Update Email and Password" className={pathname === "/profile/profile-setup" && "active-link"}>Personal profile registration.</ListItem>
                                                 <li>
                                                     <button onClick={handleLogout} className="w-full px-3 py-2 text-left border border-red-500 rounded-md text-red-600 hover:bg-red-500 hover:text-white transition">
                                                         Logout

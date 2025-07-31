@@ -26,7 +26,7 @@ const EventCard = ({ event }: { event: EventDocument }) => {
   }
 
   return (
-      <li className="flex flex-col md:flex-row gap-4 w-full   rounded-lg border-[2px] border-grey hover:border-primary transition-all p-4 m-4 bg-white shadow-sm">
+      <li className="flex flex-col md:flex-row gap-4 w-full rounded-lg border-[2px] border-grey hover:border-primary transition-all p-4 m-1 bg-white shadow-sm">
         <div className="relative w-full md:w-64 h-56 md:h-64 flex-shrink-0">
           <Link href={`/events/${event._id}`}>
             <Image
