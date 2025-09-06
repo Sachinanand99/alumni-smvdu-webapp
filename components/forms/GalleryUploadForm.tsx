@@ -23,7 +23,7 @@ const GalleryUploadForm = ({ eventId }: { eventId: string }) => {
             const formData = new FormData();
             formData.append("file", imageFile);
 
-            const uploadRes = await fetch("/api/upload", {
+            const uploadRes = await fetch("/api/uploadEvents", {
                 method: "POST",
                 body: formData,
             });

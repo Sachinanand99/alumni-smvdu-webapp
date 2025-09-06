@@ -200,7 +200,7 @@ const CampusVisitRequestForm = ({ userInfo }) => {
             </div>
 
             <div>
-                <label htmlFor="profilePicture" className="form_label">Event Image</label>
+                <label htmlFor="profilePicture" className="form_label">Alumni Image</label>
                 <Input
                     id="profilePicture"
                     name="profilePicture"
