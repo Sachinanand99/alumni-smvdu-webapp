@@ -37,6 +37,7 @@ A dynamic web application built with **Next.js** and **Tailwind CSS**, designed 
   └── data.xlsx         # Sample alumni data
 
 ```
+⚠️ Make sure it should be stored in the persistent web server storage. 
 
 ---
 
