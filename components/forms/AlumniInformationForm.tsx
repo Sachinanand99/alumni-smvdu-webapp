@@ -38,7 +38,7 @@ const CampusVisitRequestForm = ({ userInfo }) => {
         phone: "",
         entryNumber: getEntryNumber(userInfo?.user?.name || ""),
         gender: "",
-        department: "",
+        department: "CSE",
         degree: "Computer Science & Engineering",
         professionalSector: "",
         income: "",
