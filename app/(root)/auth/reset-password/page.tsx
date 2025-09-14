@@ -1,10 +1,10 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { toast } from "@/components/ui/sonner";
 
-const ResetPasswordPage = () => {
+const ResetPasswordForm = () => {
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
     const [newPassword, setNewPassword] = useState("");
@@ -41,36 +41,44 @@ const ResetPasswordPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <form
-                onSubmit={handleSubmit}
-                className="p-8 bg-white rounded-lg shadow-md space-y-4 w-80"
+        <form
+            onSubmit={handleSubmit}
+            className="p-8 bg-white rounded-lg shadow-md space-y-4 w-80"
+        >
+            <h2 className="text-xl font-bold text-center">Reset Password</h2>
+            <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+            />
+            <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+            />
+            <button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
-                <h2 className="text-xl font-bold text-center">Reset Password</h2>
-                <input
-                    type="password"
-                    placeholder="New Password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border rounded-md"
-                />
-                <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border rounded-md"
-                />
-                <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-                >
-                    {submitting ? "Resetting..." : "Reset Password"}
-                </button>
-            </form>
+                {submitting ? "Resetting..." : "Reset Password"}
+            </button>
+        </form>
+    );
+};
+
+const ResetPasswordPage = () => {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <Suspense fallback={<div>Loading...</div>}>
+                <ResetPasswordForm />
+            </Suspense>
         </div>
     );
 };
