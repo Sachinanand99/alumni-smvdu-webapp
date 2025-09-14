@@ -1,9 +1,9 @@
 {
   "name": "alumni_network_app",
-  "version": "0.1.0",
+  "version": "1.0",
   "private": true,
+  "author": "Sachin Anand, Koripella Venkata Ramani, Charanpreet kaur",
   "scripts": {
-    "init": "node init/uploadAlumni.js",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",

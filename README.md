@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎓 SMVDU Alumni & Events Portal
 
-## Getting Started
+A dynamic web application built with **Next.js** and **Tailwind CSS**, designed to manage alumni profiles, university events, and campus visit requests. This project integrates MongoDB, Google OAuth, Mapbox, and email services to deliver a seamless experience for both users and administrators.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+- 📅 Event Management — Admins can create, update, and display university events.
+- 🧑‍🎓 Alumni Directory — Alumni data is partially synced with an Excel sheet and MongoDB.
+- 📬 Campus Visit Requests — Email notifications sent to designated university contacts.
+- 📍 Map Integration — Interactive maps powered by Mapbox.
+- 🔐 Authentication — Secure login via Google OAuth2.
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology     | Purpose                          |
+|----------------|----------------------------------|
+| Next.js        | React framework for SSR & routing |
+| Tailwind CSS   | Utility-first styling             |
+| MongoDB        | Database for events & alumni      |
+| Mapbox         | Location mapping                  |
+| Google OAuth2  | Authentication                    |
+| Nodemailer     | Email notifications               |
+| XLSX           | Excel file parsing                |
+
+---
+
+## 📁 Files Structure for Images uploaded
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+/public
+  ├── alumni/           # Alumni images
+  ├── events/           # Event images
+  └── data.xlsx         # Sample alumni data
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/map.tsx`. The page auto-updates as you edit the file.
+### 🔐 Environment Variables
+Create a `.env.local` file in the root directory and add the following:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
 
-## Learn More
+env
+# Admin Emails
+NEXT_PUBLIC_EVENTS_ADMIN=sachinanand@gmail.com
+EVENTS_ADMIN=sachinanand@gmail.com
 
-To learn more about Next.js, take a look at the following resources:
+# Campus Visit Notifications
+RECEIVE_CAMPUS_VISIT_MAIL=sachinanand@gmail.com
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Footer Contact Info
+REACT_APP_CONTACT_PHONE=+91-9999999999
+REACT_APP_CONTACT_EMAIL=sachinanand@gmail.com
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Node Environment
+NODE_ENV=development
 
-## Deploy on Vercel
+# Email Configuration
+EMAIL_USER=smvdualumniproject@gmail.com
+EMAIL_PASS=abcd abcd abcd abcd
+EMAIL_PORT=587
+EMAIL_HOST=smtp.gmail.com
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Authentication
+NEXTAUTH_SECRET=secret
+AUTH_GOOGLE_ID=923749273492743-sadfiuaenfkaseg8w3ur93ujrn.apps.googleusercontent.com
+AUTH_GOOGLE_SECRET=adfdklf-asdfjofs-aoijef39infene
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Database
+MONGODB_URI=mongodb://localhost:27017/
+
+# Mapbox
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.efhiauniuandfviunaskfdq93ujrinefbsnknavsdsdaoifnioandfin
+MAPBOX_ACCESS_TOKEN=pk.efhiauniuandfviunaskfdq93ujrinefbsnknavsdsdaoifnioandfin
+NEXT_PUBLIC_MAPBOX_API_KEY=pk.eyJ1Ijoic2F2b3J5IiwiYSI6ImNsdHU2bDZnYTBzNzQya3BqMTM0MHlyMWsifQ
+
+# Base URL
+NEXT_PUBLIC_BASE_URL=https://localhost:3000
+
+⚠️ All values above are placeholders. Replace with actual credentials for production.
+
+```
+
+---
+
+### 🧪 Development
+```bash
+npm run dev
+```
+
+---
+
+### 📦 Build
+```bash
+npm run build
+```
+
+---
+
+### 📊 Data Sources
+Alumni: Partially synced from public/data.xlsx and MongoDB.
+
+Events: Fully managed via MongoDB.
+
+Images: Stored in /public/alumni and /public/events.
+
+---
+
+### 📄 Reports
+Project reports are saved in the /Report directory.
