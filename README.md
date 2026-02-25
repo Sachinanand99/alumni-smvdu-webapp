@@ -30,18 +30,6 @@ A dynamic web application built with **Next.js** and **Tailwind CSS**, designed 
 
 ---
 
-## 📁 Files Structure for Images uploaded
-
-```bash
-/public
-  ├── events/           # Event images (local storage)
-  └── Report/           # Project reports
-```
-
-# Alumni profile images are now uploaded to Cloudinary (not stored locally).
-
----
-
 ### 🔐 Environment Variables
 Create a `.env.local` file in the root directory and add the following:
 
