@@ -20,8 +20,6 @@ import GalleryUploadForm from "@/components/forms/GalleryUploadForm";
 
 const md = markdownIt();
 
-export const experimental_ppr = true;
-
 const Page = async ({ params }: { params: { id: string } }) => {
   const session = await auth();
 
