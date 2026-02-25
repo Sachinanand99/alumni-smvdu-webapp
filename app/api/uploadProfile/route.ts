@@ -1,43 +1,51 @@
-// https://javascript.plainenglish.io/file-upload-with-next-js-14-app-router-6cb0e594e778
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-import fs from "fs";
+import { v2 as cloudinary } from "cloudinary";
 
-// Adjust to your actual ROOT_PATH environment variable and target folder
-const UPLOAD_DIR = path.resolve(process.env.ROOT_PATH ?? "", "public/uploads/alumni");
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
 
-// Generates a unique name by appending timestamp and random hash
 const generateUniqueFilename = (originalName: string) => {
-    const ext = path.extname(originalName);
-    const baseName = path.basename(originalName, ext);
-    const timeStamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const randomHash = Math.random().toString(36).substring(2, 8);
-    return `${baseName}_${timeStamp}_${randomHash}${ext}`;
+  const ext = originalName.split(".").pop();
+  const baseName = originalName.replace(/\.[^/.]+$/, "");
+  const timeStamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const randomHash = Math.random().toString(36).substring(2, 8);
+  return `${baseName}_${timeStamp}_${randomHash}.${ext}`;
 };
 
 export const POST = async (req: NextRequest) => {
+  try {
     const formData = await req.formData();
-    const body = Object.fromEntries(formData);
-    const file = (body.file as Blob) || null;
+    const file = formData.get("file") as File | null;
 
     if (!file) {
-        return NextResponse.json({ success: false });
+      return NextResponse.json({ success: false, error: "No file uploaded" });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    if (!fs.existsSync(UPLOAD_DIR)) {
-        fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-    }
+    const uniqueName = generateUniqueFilename(file.name);
 
-    const originalName = (body.file as File).name;
-    const uniqueName = generateUniqueFilename(originalName);
-    const filePath = path.resolve(UPLOAD_DIR, uniqueName);
-
-    fs.writeFileSync(filePath, buffer);
+    // Upload buffer to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream({ public_id: uniqueName, folder: "alumni_profiles" }, (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        })
+        .end(buffer);
+    });
 
     return NextResponse.json({
-        success: true,
-        name: uniqueName,
+      success: true,
+      name: uniqueName,
+      url: (result as any).secure_url, // Cloudinary public URL
     });
+  } catch (error) {
+    console.error("Cloudinary upload failed:", error);
+    return NextResponse.json({ success: false, error: "Upload failed" }, { status: 500 });
+  }
 };

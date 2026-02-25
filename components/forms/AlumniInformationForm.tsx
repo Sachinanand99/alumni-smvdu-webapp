@@ -24,7 +24,6 @@ const getDegreeType = (entryNumber: string) => {
     return "";
 };
 
-// Optimization todo: remove images if already in public/alumni directory to free up space only from xlsx data.
 
 const CampusVisitRequestForm = ({ userInfo }) => {
     const router = useRouter();
@@ -92,57 +91,59 @@ const CampusVisitRequestForm = ({ userInfo }) => {
     }, [defaultFormValues.entryNumber]);
 
     const handleFormSubmit = async (prevState: any, formData: FormData) => {
-        try {
-            const rawValues = Object.fromEntries(formData.entries());
-            let imageUrl = "";
+    try {
+        const rawValues = Object.fromEntries(formData.entries());
+        let imageUrl = "";
 
-            if (imageFile) {
-                const uploadFormData = new FormData();
-                uploadFormData.append("file", imageFile);
+        if (imageFile) {
+            const uploadFormData = new FormData();
+            uploadFormData.append("file", imageFile);
 
-                const uploadRes = await fetch("/api/uploadProfile", {
-                    method: "POST",
-                    body: uploadFormData,
-                });
-
-                const uploadData = await uploadRes.json();
-                if (!uploadData.success) new Error("Image upload failed.");
-                imageUrl = `/uploads/alumni/${uploadData.name}`;
-            }
-
-            const formValuesObj = {
-                ...rawValues,
-                profilePicture: imageUrl,
-            };
-
-            await AlumniInformationFormSchema.parseAsync(formValuesObj);
-
-            const response = await fetch("/api/alumni/updateExcelWithAlumniData", {
+            const uploadRes = await fetch("/api/uploadProfile", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formValuesObj),
+                body: uploadFormData,
             });
 
-            const responseData = await response.json();
+            const uploadData = await uploadRes.json();
+            if (!uploadData.success) throw new Error("Image upload failed.");
 
-            if (response.ok && responseData.success) {
-                toast("✅ Your request has been recorded successfully.");
-                router.push("/");
-            } else {
-                throw new Error(responseData.error || "Failed to update Excel.");
-            }
-        } catch (error) {
-            if (error instanceof z.ZodError) {
-                setErrors(error.flatten().fieldErrors as any);
-                toast("❌ Please check the highlighted fields and try again.");
-                return { status: "ERROR" };
-            }
-
-            console.error("Unexpected error during submission:", error);
-            toast("❌ Something went wrong while submitting the form.");
-            return { status: "ERROR", error: "unexpected failure" };
+            imageUrl = uploadData.url;
         }
-    };
+
+        const formValuesObj = {
+            ...rawValues,
+            profilePicture: imageUrl,
+        };
+
+        await AlumniInformationFormSchema.parseAsync(formValuesObj);
+
+        const response = await fetch("/api/alumni/updateExcelWithAlumniData", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formValuesObj),
+        });
+
+        const responseData = await response.json();
+
+        if (response.ok && responseData.success) {
+            toast("✅ Your request has been recorded successfully.");
+            router.push("/");
+        } else {
+            throw new Error(responseData.error || "Failed to update Google Sheet.");
+        }
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            setErrors(error.flatten().fieldErrors as any);
+            toast("❌ Please check the highlighted fields and try again.");
+            return { status: "ERROR" };
+        }
+
+        console.error("Unexpected error during submission:", error);
+        toast("❌ Something went wrong while submitting the form.");
+        return { status: "ERROR", error: "unexpected failure" };
+    }
+};
+
 
     const [state, formAction, isPending] = useActionState(handleFormSubmit, {
         status: "INITIAL",

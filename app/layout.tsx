@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
      <html lang="en">
      <body
-        className={"bg-amber-50"}
+        className={"bg-amber-50"} suppressHydrationWarning={true}
      >
      <SessionProvider>
      <Header/>

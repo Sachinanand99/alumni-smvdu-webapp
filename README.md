@@ -1,16 +1,17 @@
 # 🎓 SMVDU Alumni & Events Portal
 
-A dynamic web application built with **Next.js** and **Tailwind CSS**, designed to manage alumni profiles, university events, and campus visit requests. This project integrates MongoDB, Google OAuth, Mapbox, and email services to deliver a seamless experience for both users and administrators.
+A dynamic web application built with **Next.js** and **Tailwind CSS**, designed to manage alumni profiles, university events, and campus visit requests. This project integrates MongoDB, Google OAuth, Mapbox, Google Sheets, Cloudinary, and email services to deliver a seamless experience for both users and administrators.
 
 ---
 
 ## 🚀 Features
 
 - 📅 Event Management — Admins can create, update, and display university events.
-- 🧑‍🎓 Alumni Directory — Alumni data is partially synced with an Excel sheet and MongoDB.
+- 🧑‍🎓 Alumni Directory — Alumni data is synced with **Google Sheets** and MongoDB.
 - 📬 Campus Visit Requests — Email notifications sent to designated university contacts.
 - 📍 Map Integration — Interactive maps powered by Mapbox.
 - 🔐 Authentication — Secure login via Google OAuth2.
+- 🖼️ Cloudinary Integration — Alumni profile images are uploaded and served via Cloudinary CDN.
 
 ---
 
@@ -24,7 +25,8 @@ A dynamic web application built with **Next.js** and **Tailwind CSS**, designed 
 | Mapbox         | Location mapping                  |
 | Google OAuth2  | Authentication                    |
 | Nodemailer     | Email notifications               |
-| XLSX           | Excel file parsing                |
+| Google Sheets  | Alumni data storage & syncing     |
+| Cloudinary     | Image hosting & optimization      |
 
 ---
 
@@ -32,12 +34,10 @@ A dynamic web application built with **Next.js** and **Tailwind CSS**, designed 
 
 ```bash
 /public
-  ├── alumni/           # Alumni images
-  ├── events/           # Event images
-  └── data.xlsx         # Sample alumni data
+  ├── events/           # Event images (local storage)
+  └── Report/           # Project reports
 
-```
-⚠️ Make sure it should be stored in the persistent web server storage. 
+# Alumni profile images are now uploaded to Cloudinary (not stored locally).
 
 ---
 
@@ -62,7 +62,7 @@ REACT_APP_CONTACT_EMAIL=sachinanand@gmail.com
 NODE_ENV=development
 
 # Email Configuration
-EMAIL_USER=smvdualumniproject@gmail.com
+EMAIL_USER=smvdualumniprojecteg@gmail.com
 EMAIL_PASS=abcd abcd abcd abcd
 EMAIL_PORT=587
 EMAIL_HOST=smtp.gmail.com
@@ -73,7 +73,7 @@ AUTH_GOOGLE_ID=923749273492743-sadfiuaenfkaseg8w3ur93ujrn.apps.googleusercontent
 AUTH_GOOGLE_SECRET=adfdklf-asdfjofs-aoijef39infene
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/
+MONGODB_URI=mongodb://localhost:27017/alumnidb
 
 # Mapbox
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.efhiauniuandfviunaskfdq93ujrinefbsnknavsdsdaoifnioandfin
@@ -82,6 +82,15 @@ NEXT_PUBLIC_MAPBOX_API_KEY=pk.eyJ1Ijoic2F2b3J5IiwiYSI6ImNsdHU2bDZnYTBzNzQya3BqMT
 
 # Base URL
 NEXT_PUBLIC_BASE_URL=https://localhost:3000
+
+# Google Sheets 
+GOOGLE_CLIENT_EMAIL=your-service-account@project-id.iam.gserviceaccount.com GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..." 
+GOOGLE_SHEET_ID=your_google_sheet_id 
+
+# Cloudinary 
+CLOUDINARY_CLOUD_NAME=your_cloud_name 
+CLOUDINARY_API_KEY=your_api_key 
+CLOUDINARY_API_SECRET=your_api_secret
 
 ⚠️ All values above are placeholders. Replace with actual credentials for production.
 
