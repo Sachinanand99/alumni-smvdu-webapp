@@ -36,6 +36,7 @@ A dynamic web application built with **Next.js** and **Tailwind CSS**, designed 
 /public
   ├── events/           # Event images (local storage)
   └── Report/           # Project reports
+```
 
 # Alumni profile images are now uploaded to Cloudinary (not stored locally).
 
