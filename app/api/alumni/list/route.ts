@@ -1,40 +1,55 @@
 import { NextResponse } from "next/server";
-import * as xlsx from "xlsx";
-import fs from "fs";
+import { google } from "googleapis";
 import path from "path";
 
 export async function GET() {
     try {
-        const filePath = path.join(process.cwd(), "public/data.xlsx");
+        const auth = new google.auth.GoogleAuth({
+            credentials: { client_email: process.env.GOOGLE_CLIENT_EMAIL, private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"), },
+            scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+        });
 
-        if (!fs.existsSync(filePath)) {
-            return NextResponse.json({ error: "Excel file not found." }, { status: 404 });
-        }
+        const sheets = google.sheets({ version: "v4", auth });
 
-        const fileBuffer = fs.readFileSync(filePath);
-        const workbook = xlsx.read(fileBuffer, { type: "buffer" });
+        const spreadsheetId = process.env.GOOGLE_SHEET_ID!;
 
-        const sheetNames = workbook.SheetNames;
+        const metadata = await sheets.spreadsheets.get({ spreadsheetId });
+        const sheetNames = metadata.data.sheets?.map((s) => s.properties?.title) || [];
+
         const allRows: any[] = [];
 
         for (const sheetName of sheetNames) {
-            const sheet = workbook.Sheets[sheetName];
-            const rows = xlsx.utils.sheet_to_json<any>(sheet);
+            if (!sheetName) continue;
 
-            rows.forEach(row => {
-                allRows.push({
-                    ...row,
-                    graduationYear: sheetName,
-                });
+            const response = await sheets.spreadsheets.values.get({
+                spreadsheetId,
+                range: sheetName, // fetch entire sheet
             });
+
+            const rows = response.data.values || [];
+            if (!rows.length) continue;
+
+            const headers = rows[0];
+            const data = rows.slice(1).map((row) => {
+                const entry: Record<string, string> = {};
+                headers.forEach((header, i) => {
+                    entry[header] = row[i] || "";
+                });
+                return {
+                    ...entry,
+                    graduationYear: sheetName, // sheet name as graduation year
+                };
+            });
+
+            allRows.push(...data);
         }
 
         return NextResponse.json({
-            rows: allRows.filter(r => r.fullName || r.entryNumber),
+            rows: allRows.filter((r) => r.fullName || r.entryNumber),
             sheetNames,
         });
     } catch (error) {
-        console.error("Error reading Excel:", error);
-        return NextResponse.json({ error: "Server error reading Excel file." }, { status: 500 });
+        console.error("Error reading Google Sheets:", error);
+        return NextResponse.json({ error: "Server error reading Google Sheets." }, { status: 500 });
     }
 }

@@ -37,6 +37,7 @@
     "date-fns": "^4.1.0",
     "easymde": "^2.20.0",
     "fs": "^0.0.1-security",
+    "googleapis": "^171.4.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.483.0",
     "mapbox-gl": "^3.11.1",

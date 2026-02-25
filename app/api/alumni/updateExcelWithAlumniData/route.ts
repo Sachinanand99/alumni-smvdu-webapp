@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import * as xlsx from "xlsx";
-import fs from "fs";
+import { google } from "googleapis";
 import path from "path";
 import { auth } from "@/auth";
 
@@ -20,25 +19,66 @@ export async function POST(req: Request) {
 
         const entryNumber = clean(formData.entryNumber);
         const email = clean(formData.email);
-        const profilePicture = clean(formData.profilePicture);
         const admissionYear = `20${parseInt(entryNumber.slice(0, 2)) + 4}`;
 
-        const filePath = path.join(process.cwd(), "public", "data.xlsx");
-        const tempPath = filePath + ".tmp";
+        const authClient = new google.auth.GoogleAuth({
+            credentials: { client_email: process.env.GOOGLE_CLIENT_EMAIL, private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"), },
+            scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+        });
 
-        if (!fs.existsSync(filePath)) {
-            return NextResponse.json({ error: "Excel file not found!" }, { status: 404 });
+        const sheets = google.sheets({ version: "v4", auth: authClient });
+        const spreadsheetId = process.env.GOOGLE_SHEET_ID!;
+
+        const metadata = await sheets.spreadsheets.get({ spreadsheetId });
+        const sheetNames = metadata.data.sheets?.map((s) => s.properties?.title) || [];
+
+        if (!sheetNames.includes(admissionYear)) {
+            await sheets.spreadsheets.batchUpdate({
+                spreadsheetId,
+                requestBody: {
+                    requests: [
+                        {
+                            addSheet: {
+                                properties: { title: admissionYear },
+                            },
+                        },
+                    ],
+                },
+            });
         }
 
-        const workbook = xlsx.read(fs.readFileSync(filePath), { type: "buffer" });
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: admissionYear,
+        });
 
-        if (!workbook.SheetNames.includes(admissionYear)) {
-            workbook.SheetNames.push(admissionYear);
-            workbook.Sheets[admissionYear] = xlsx.utils.json_to_sheet([]);
-        }
+        const rows = response.data.values || [];
+        const headers = rows[0] || [
+            "Sno",
+            "fullName",
+            "email",
+            "phone",
+            "entryNumber",
+            "gender",
+            "department",
+            "degree",
+            "professionalSector",
+            "income",
+            "countryOfResidence",
+            "postalAddress",
+            "linkedinProfile",
+            "twitterProfile",
+            "companyOrInstitute",
+            "profilePicture",
+        ];
 
-        const sheet = workbook.Sheets[admissionYear];
-        const sheetData = xlsx.utils.sheet_to_json<any>(sheet);
+        const sheetData = rows.slice(1).map((row) => {
+            const entry: Record<string, string> = {};
+            headers.forEach((header, i) => {
+                entry[header] = row[i] || "";
+            });
+            return entry;
+        });
 
         const newEntry = {
             fullName: clean(formData.fullName),
@@ -80,16 +120,16 @@ export async function POST(req: Request) {
             updatedIndex = Sno - 1;
         }
 
-        workbook.Sheets[admissionYear] = xlsx.utils.json_to_sheet(sheetData);
-        try {
-            const buffer = xlsx.write(workbook, { bookType: "xlsx", type: "buffer" });
-            fs.writeFileSync(tempPath, buffer);
-            fs.renameSync(tempPath, filePath);
-            console.log(`✅ Entry ${updated ? "updated" : "added"}: ${entryNumber}`);
-        } catch (err) {
-            console.error("❌ Failed to write Excel:", err);
-            return NextResponse.json({ error: "Failed to write Excel file." }, { status: 500 });
-        }
+        const updatedRows = [headers, ...sheetData.map((row) => headers.map((h) => row[h] || ""))];
+
+        await sheets.spreadsheets.values.update({
+            spreadsheetId,
+            range: admissionYear,
+            valueInputOption: "RAW",
+            requestBody: { values: updatedRows },
+        });
+
+        console.log(`✅ Entry ${updated ? "updated" : "added"}: ${entryNumber}`);
 
         return NextResponse.json({
             success: true,
@@ -100,7 +140,7 @@ export async function POST(req: Request) {
             row: updatedIndex + 1,
         });
     } catch (error) {
-        console.error("❌ Error updating Excel file:", error);
-        return NextResponse.json({ error: "Failed to update Excel file." }, { status: 500 });
+        console.error("❌ Error updating Google Sheet:", error);
+        return NextResponse.json({ error: "Failed to update Google Sheet." }, { status: 500 });
     }
 }

@@ -1,36 +1,57 @@
-import fs from "fs";
+import { google } from "googleapis";
 import path from "path";
-import * as xlsx from "xlsx";
 
-export default async function readXlsxData(fields: string[] = []) {
+export default async function readGoogleSheetData(fields: string[] = []) {
     try {
-        const filePath = path.join(process.cwd(), "public/data.xlsx");
+        const auth = new google.auth.GoogleAuth({
+            credentials: { client_email: process.env.GOOGLE_CLIENT_EMAIL, private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"), },
+            scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+        });
 
-        if (!fs.existsSync(filePath)) {
-            console.error("File not found:", filePath);
-            return [];
-        }
+        const sheets = google.sheets({ version: "v4", auth });
 
-        const fileBuffer = fs.readFileSync(filePath);
-        const workbook = xlsx.read(fileBuffer, { type: "buffer" });
+        const spreadsheetId = process.env.GOOGLE_SHEET_ID!;
 
-        return workbook.SheetNames.flatMap(sheetName =>
-            xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]).map(entry => {
-                const filteredEntry = fields.length > 0
-                    ? Object.fromEntries(
-                        Object.entries(entry).filter(([key]) => fields.includes(key))
-                    )
-                    : entry;
+        const metadata = await sheets.spreadsheets.get({ spreadsheetId });
+        const sheetNames = metadata.data.sheets?.map((s) => s.properties?.title) || [];
+
+        const allData: any[] = [];
+
+        for (const sheetName of sheetNames) {
+            if (!sheetName) continue;
+
+            const response = await sheets.spreadsheets.values.get({
+                spreadsheetId,
+                range: sheetName, // fetch entire sheet
+            });
+
+            const rows = response.data.values || [];
+            if (!rows.length) continue;
+
+            const headers = rows[0];
+            const data = rows.slice(1).map((row) => {
+                const entry: Record<string, string> = {};
+                headers.forEach((header, i) => {
+                    if (fields.length === 0 || fields.includes(header)) {
+                        entry[header] = row[i] || "";
+                    }
+                });
 
                 return {
-                    ...filteredEntry,
-                    graduationYear: sheetName,
-                    universityEmail: entry.entryNumber ? `${entry.entryNumber}@smvdu.ac.in` : null,
+                    ...entry,
+                    graduationYear: sheetName, // sheet name as graduation year
+                    universityEmail: entry.entryNumber
+                        ? `${entry.entryNumber}@smvdu.ac.in`
+                        : null,
                 };
-            })
-        );
+            });
+
+            allData.push(...data);
+        }
+
+        return allData;
     } catch (error) {
-        console.error("Error reading XLSX data:", error);
+        console.error("Error reading Google Sheets:", error);
         return [];
     }
 }

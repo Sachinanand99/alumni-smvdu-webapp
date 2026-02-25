@@ -39,7 +39,7 @@ const CampusVisitRequestForm = ({ userInfo }) => {
         entryNumber: getEntryNumber(userInfo?.user?.name || ""),
         gender: "",
         department: "CSE",
-        degree: "Computer Science & Engineering",
+        degree: "Undergraduate (B.Tech)",
         professionalSector: "",
         income: "",
         countryOfResidence: "",
